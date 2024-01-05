@@ -1,4 +1,4 @@
-import { TextField } from "@mui/material";
+import { TextField, ThemeProvider, colors, createTheme, outlinedInputClasses } from "@mui/material";
 
 interface iProps {
   type: string;
@@ -15,15 +15,37 @@ const Input: React.FC<iProps> = ({
   errorText,
   onChange,
 }) => {
+  const theme = createTheme({
+    palette: {
+      mode: localStorage.theme === "dark" ? "dark" : "light",
+      primary: {
+        main: "#835414",
+      },
+      secondary: {
+        main: "#F9BB72",
+      },
+    },
+    // typography: {
+    //   allVariants: {
+    //     color: localStorage.theme === "dark" ? "#D8C3AF" : "",
+    //     borderColor: localStorage.theme === "dark" ? "#A08E7B" : "",
+    //   },
+    // },
+  });
+
   return (
-    <TextField
-      error={!!errorText}
-      type={type}
-      label={label}
-      value={value}
-      helperText={errorText}
-      onChange={onChange}
-    />
+    <ThemeProvider theme={theme}>
+      <TextField
+        error={!!errorText}
+        type={type}
+        label={label}
+        value={value}
+        helperText={errorText}
+        color={localStorage.theme === "dark" ? "secondary" : "primary"}
+        style={{color: "#fff", accentColor: "#fff", colorAdjust: "exact", colorScheme: "normal"}}
+        onChange={onChange}
+      />
+    </ThemeProvider>
   );
 };
 
