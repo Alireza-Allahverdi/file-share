@@ -21,12 +21,14 @@ function Security() {
             type="password"
             disabled
           />
-          <ButtonC
-            className="w-[220px] text-[14px]"
-            title="Change Password"
-            type="contained"
-            icon={<MdLockOutline size={18} />}
-          />
+          <div className="w-[220px]">
+            <ButtonC
+              className="text-[14px]"
+              title="Change Password"
+              type="contained"
+              icon={<MdLockOutline size={18} />}
+            />
+          </div>
         </div>
         <div className="flex items-center gap-x-6">
           <span>Secret Key</span>
@@ -36,18 +38,22 @@ function Security() {
             disabled
           ></textarea>
           <div className="h-[260px] flex items-end gap-x-4">
-            <ButtonC
-              className="w-[100px] text-[14px]"
-              title="Copy"
-              type="contained"
-              icon={<MdOutlineContentCopy size={18} />}
-            />
-            <ButtonC
-              className="w-[220px] text-[14px]"
-              title="Change Secret Key"
-              type="contained"
-              icon={<GrUpdate size={15} />}
-            />
+            <div className="w-[100px]">
+              <ButtonC
+                className="text-[14px]"
+                title="Copy"
+                type="contained"
+                icon={<MdOutlineContentCopy size={18} />}
+              />
+            </div>
+            <div className="w-[220px]">
+              <ButtonC
+                className="text-[14px]"
+                title="Change Secret Key"
+                type="contained"
+                icon={<GrUpdate size={15} />}
+              />
+            </div>
           </div>
         </div>
       </div>
