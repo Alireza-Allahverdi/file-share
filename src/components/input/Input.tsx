@@ -1,17 +1,21 @@
-import { TextField, ThemeProvider, colors, createTheme, outlinedInputClasses } from "@mui/material";
+import { TextField, ThemeProvider, createTheme } from "@mui/material";
 
 interface iProps {
+  className?: string;
   type: string;
   label: string;
   value: string | number;
   errorText?: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  disabled?: boolean;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const Input: React.FC<iProps> = ({
+  className,
   type,
   label,
   value,
+  disabled,
   errorText,
   onChange,
 }) => {
@@ -36,13 +40,14 @@ const Input: React.FC<iProps> = ({
   return (
     <ThemeProvider theme={theme}>
       <TextField
+        className={className}
         error={!!errorText}
         type={type}
         label={label}
         value={value}
         helperText={errorText}
+        disabled={disabled}
         color={localStorage.theme === "dark" ? "secondary" : "primary"}
-        style={{color: "#fff", accentColor: "#fff", colorAdjust: "exact", colorScheme: "normal"}}
         onChange={onChange}
       />
     </ThemeProvider>
