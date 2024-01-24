@@ -14,7 +14,7 @@ const SliderC: React.FC<sliderProps> = ({ value, max, min }) => {
         main: "#835414",
       },
       secondary: {
-        main: "#F9BB72",
+        main: "#FFC480",
       },
     },
   });

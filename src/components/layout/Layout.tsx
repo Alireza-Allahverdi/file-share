@@ -65,7 +65,7 @@ function Layout() {
             </Link>
           ))}
         </div>
-        <div className="flex-[0.8] h-auto bg-on-primary dark:bg-on-primary-dark rounded-2xl py-6 px-14 shadow-[#0000004D] shadow-sm">
+        <div className="flex-[0.8] h-[100vh] bg-on-primary dark:bg-on-primary-dark rounded-2xl py-6 px-14 shadow-[#0000004D] shadow-sm">
           <Outlet />
         </div>
       </div>

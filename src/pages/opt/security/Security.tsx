@@ -7,13 +7,13 @@ function Security() {
   return (
     <div>
       <div className="flex justify-between py-4 border-b border-b-on-surface dark:border-b-on-surface-dark">
-        <span className="text-[22px] text-on-surface dark:bg-on-surface-dark">
+        <span className="text-[22px] text-on-surface dark:text-on-surface-dark">
           Security
         </span>
       </div>
       <div className="w-full flex flex-col gap-y-6 py-6">
         <div className="flex items-center gap-x-6">
-          <span className="mr-2">Password</span>
+          <span className="text-on-surface dark:text-on-surface-dark mr-2">Password</span>
           <Input
             className="w-[330px]"
             label="password"
@@ -31,9 +31,9 @@ function Security() {
           </div>
         </div>
         <div className="flex items-center gap-x-6">
-          <span>Secret Key</span>
+          <span className="text-on-surface dark:text-on-surface-dark">Secret Key</span>
           <textarea
-            className="w-[330px] border border-[#bdbdbd] rounded-md resize-none"
+            className="w-[330px] border border-[#bdbdbd] rounded-md bg-transparent resize-none"
             rows={10}
             disabled
           ></textarea>

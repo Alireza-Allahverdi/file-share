@@ -29,12 +29,6 @@ const Input: React.FC<iProps> = ({
         main: "#F9BB72",
       },
     },
-    // typography: {
-    //   allVariants: {
-    //     color: localStorage.theme === "dark" ? "#D8C3AF" : "",
-    //     borderColor: localStorage.theme === "dark" ? "#A08E7B" : "",
-    //   },
-    // },
   });
 
   return (

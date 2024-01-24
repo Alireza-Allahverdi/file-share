@@ -22,13 +22,13 @@ function Account() {
               onClick={() => setEditMode(false)}
             />
           )}
-          <span className="text-[22px] text-on-surface dark:bg-on-surface-dark">Account Info</span>
+          <span className="text-[22px] text-on-surface dark:text-on-surface-dark">Account Info</span>
         </div>
         <ButtonC
           className="w-max"
           title={!editMode ? "Edit Info" : "Save Changes"}
           type="contained"
-          icon={!editMode ? <MdOutlineEdit size={20} /> : <MdOutlineSave />}
+          icon={!editMode ? <MdOutlineEdit size={20} /> : <MdOutlineSave size={20} />}
           onCLick={() => setEditMode(!editMode)}
         />
       </div>
