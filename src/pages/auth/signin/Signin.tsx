@@ -65,6 +65,7 @@ function Signin() {
                 />
                 <Link to="/auth/signup">
                   <ButtonC
+                   className="w-full"
                     title="Sign Up"
                     type="outlined"
                     icon={<MdOutlineModeEdit size={20} />}

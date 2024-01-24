@@ -13,7 +13,7 @@ function Users() {
   return (
     <div>
       <div className="flex items-center justify-between py-4 border-b border-b-on-surface dark:border-b-on-surface-dark">
-        <span className="text-[22px] text-on-surface dark:text-on-surface-dark">
+        <span className="text-[1.4em] text-on-surface dark:text-on-surface-dark">
           Users
         </span>
         <ButtonC

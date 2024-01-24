@@ -59,7 +59,6 @@ function Signup() {
     }
     return errorMsg;
   };
-  localStorage.theme = "dark"
 
   const handleSignUp = (values: signUpTypes) => {};
 
@@ -126,6 +125,7 @@ function Signup() {
               />
               <Link to="/auth/signin">
                 <ButtonC
+                 className="w-full"
                   title="Log In "
                   type="outlined"
                   icon={<MdOutlineModeEdit size={20} />}

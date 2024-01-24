@@ -2,16 +2,19 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import Signup from "./pages/auth/signup/Signup.tsx";
 import Signin from "./pages/auth/signin/Signin.tsx";
-import App from "./App.tsx";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import "./index.css";
 import AuthLayout from "./components/authLayout/AuthLayout.tsx";
-import Layout from "./components/layout/Layout.tsx";
+import Home from "./pages/home/Home.tsx";
+import OptionLayout from "./components/optionLayout/OptionLayout.tsx";
 import Account from "./pages/opt/account/Account.tsx";
 import Personalization from "./pages/opt/personalization/Personalization.tsx";
 import Security from "./pages/opt/security/Security.tsx";
 import ServerSetting from "./pages/opt/serverSetting/ServerSetting.tsx";
 import Users from "./pages/opt/users/Users.tsx";
+import "./index.css";
+import Layout from "./components/layout/Layout.tsx";
+import Favorite from "./pages/favorite/Favorite.tsx";
+import Shared from "./pages/shared/Shared.tsx";
 
 if (
   localStorage.theme === "dark" ||
@@ -19,14 +22,30 @@ if (
     window.matchMedia("(prefers-color-scheme: dark)").matches)
 ) {
   document.documentElement.classList.add("dark");
+  localStorage.theme = "dark";
 } else {
   document.documentElement.classList.remove("dark");
+  localStorage.theme = "light";
 }
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: <Layout />,
+    children: [
+      {
+        index: true,
+        element: <Home />,
+      },
+      {
+        path: "favorite",
+        element: <Favorite />,
+      },
+      {
+        path: "shared",
+        element: <Shared />,
+      },
+    ],
   },
   {
     path: "/auth",
@@ -44,7 +63,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/opt",
-    element: <Layout />,
+    element: <OptionLayout />,
     children: [
       {
         path: "account",

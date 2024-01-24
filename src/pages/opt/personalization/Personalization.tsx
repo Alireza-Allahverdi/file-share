@@ -1,30 +1,60 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import SliderC from "../../../components/slider/SliderC";
 import styles from "./personalization.module.css";
 
 function Personalization() {
+  const root = getComputedStyle(document.documentElement);
+
+  const [seelctedFont, setSelectedFont] = useState<number>(3);
+
+  const onSliderChange = (value: number) => {
+    setSelectedFont(value);
+    switch (value) {
+      case 1:
+        document.documentElement.style.setProperty("--base-font-size", "12px");
+        break;
+      case 2:
+        document.documentElement.style.setProperty("--base-font-size", "14px");
+        break;
+      case 3:
+        document.documentElement.style.setProperty("--base-font-size", "16px");
+        break;
+      case 4:
+        document.documentElement.style.setProperty("--base-font-size", "18px");
+        break;
+      case 5:
+        document.documentElement.style.setProperty("--base-font-size", "20px");
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <div>
       <div className="flex justify-between py-4 border-b border-b-on-surface dark:border-b-on-surface-dark">
-        <span className="text-[22px] text-on-surface dark:text-on-surface-dark">
+        <span className="text-[1.4em] text-on-surface dark:text-on-surface-dark">
           Personalization
         </span>
       </div>
       <div className="w-full flex flex-col gap-y-6 py-6">
-        <div className="flex items-center gap-x-6">
-          <span className="flex-[.1] text-lg mr-2 text-on-surface dark:text-on-surface-dark">
-            Shadow Size
-          </span>{" "}
-          <SliderC value={1} max={3} min={1} />
-        </div>
-        <div className="flex items-center gap-x-6">
-          <span className="flex-[.1] text-lg mr-2 text-on-surface dark:text-on-surface-dark">
+        <div className="w-1/2 flex items-center gap-x-6">
+          <span className="w-1/5 text-[1.125em] mr-2 text-on-surface dark:text-on-surface-dark">
             Text Size
           </span>{" "}
-          <SliderC value={1} max={3} min={1} />
+          <div className="w-4/5 flex items-center gap-x-4">
+            <span className="text-[16px]">very small</span>
+            <SliderC
+              value={seelctedFont}
+              max={5}
+              min={1}
+              handleChange={onSliderChange}
+            />
+            <span className="text-[16px]">very large</span>
+          </div>
         </div>
-        <div className="flex gap-x-6">
-          <span className="flex-[.12] text-lg mr-2 text-on-surface dark:text-on-surface-dark">
+        <div className="flex w-1/2 gap-x-6">
+          <span className="w-1/5 text-[1.125em] mr-2 text-on-surface dark:text-on-surface-dark">
             Theme
           </span>{" "}
           <div
@@ -32,10 +62,10 @@ function Personalization() {
             onClick={() => {
               if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
                 document.documentElement.classList.add("dark");
-                localStorage.theme = "dark"
+                localStorage.theme = "dark";
               } else {
                 document.documentElement.classList.remove("dark");
-                localStorage.theme = "light"
+                localStorage.theme = "light";
               }
             }}
           >

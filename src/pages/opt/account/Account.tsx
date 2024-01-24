@@ -22,7 +22,7 @@ function Account() {
               onClick={() => setEditMode(false)}
             />
           )}
-          <span className="text-[22px] text-on-surface dark:text-on-surface-dark">Account Info</span>
+          <span className="text-[1.4em] text-on-surface dark:text-on-surface-dark">Account Info</span>
         </div>
         <ButtonC
           className="w-max"
@@ -32,8 +32,8 @@ function Account() {
           onCLick={() => setEditMode(!editMode)}
         />
       </div>
-      <div className="w-full flex gap-x-6 py-6">
-        <div className="flex flex-col flex-[0.5] gap-y-6">
+      <div className="w-full flex gap-x-[40px] py-6">
+        <div className="flex flex-col w-full gap-y-6">
           <Input
             label="User Name"
             value={""}
@@ -49,7 +49,7 @@ function Account() {
             onChange={(e) => console.log(e)}
           />
         </div>
-        <div className="flex flex-col flex-[0.5] gap-y-6">
+        <div className="flex flex-col w-full gap-y-6">
           <Input
             label="Email"
             value={""}

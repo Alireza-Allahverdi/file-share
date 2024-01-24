@@ -1,59 +1,64 @@
+import { useState } from "react";
 import ButtonC from "../../../components/button/ButtonC";
 import Input from "../../../components/input/Input";
-import { MdLockOutline, MdOutlineContentCopy } from "react-icons/md";
-import { GrUpdate } from "react-icons/gr";
+import { MdLockOutline, MdOutlineContentCopy, MdOutlineSave } from "react-icons/md";
 
 function Security() {
+
+    const [editMode , setEditMode] = useState<boolean>(false)
+
   return (
     <div>
       <div className="flex justify-between py-4 border-b border-b-on-surface dark:border-b-on-surface-dark">
-        <span className="text-[22px] text-on-surface dark:text-on-surface-dark">
+        <span className="text-[1.4em] text-on-surface dark:text-on-surface-dark">
           Security
         </span>
       </div>
       <div className="w-full flex flex-col gap-y-6 py-6">
         <div className="flex items-center gap-x-6">
-          <span className="text-on-surface dark:text-on-surface-dark mr-2">Password</span>
+          <div className="flex items-center gap-x-6 w-1/2">
+          <span className="w-1/5 text-on-surface dark:text-on-surface-dark">Password</span>
           <Input
-            className="w-[330px]"
+            className="w-4/5"
             label="password"
             value={""}
             type="password"
-            disabled
+            disabled={!editMode}
           />
-          <div className="w-[220px]">
+          </div>
             <ButtonC
               className="text-[14px]"
-              title="Change Password"
+              title={!editMode  ?"Change Password" : "Save"}
               type="contained"
-              icon={<MdLockOutline size={18} />}
+              icon={!editMode ? <MdLockOutline size={20} /> : <MdOutlineSave size={20} />}
+              onCLick={() => setEditMode(!editMode)}
             />
-          </div>
+            {
+                editMode ?
+                <ButtonC 
+                title="Cancel"
+                type="outlined"
+                onCLick={() => setEditMode(false)}
+                />
+                : null
+            }
         </div>
         <div className="flex items-center gap-x-6">
-          <span className="text-on-surface dark:text-on-surface-dark">Secret Key</span>
+        <div className="flex items-center gap-x-6 w-1/2">
+          <span className="w-1/5 text-on-surface dark:text-on-surface-dark">Secret Key</span>
           <textarea
-            className="w-[330px] border border-[#bdbdbd] rounded-md bg-transparent resize-none"
+            className="w-4/5 border border-[#bdbdbd] rounded-md bg-transparent resize-none"
             rows={10}
             disabled
           ></textarea>
+        </div>
           <div className="h-[260px] flex items-end gap-x-4">
-            <div className="w-[100px]">
               <ButtonC
                 className="text-[14px]"
                 title="Copy"
                 type="contained"
                 icon={<MdOutlineContentCopy size={18} />}
               />
-            </div>
-            <div className="w-[220px]">
-              <ButtonC
-                className="text-[14px]"
-                title="Change Secret Key"
-                type="contained"
-                icon={<GrUpdate size={15} />}
-              />
-            </div>
           </div>
         </div>
       </div>

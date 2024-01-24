@@ -1,4 +1,4 @@
-import { Button, createTheme } from "@mui/material";
+import { Button, ThemeProvider, createTheme } from "@mui/material";
 
 interface iProps {
   className?: string;
@@ -16,9 +16,18 @@ const ButtonC: React.FC<iProps> = ({
   onCLick,
 }) => {
 
+  const theme = createTheme({      
+    typography: {
+      button: {
+        textTransform: 'none'
+      }
+    }
+  });
+
   return (
+    <ThemeProvider theme={theme}>
     <Button
-      className={`flex w-full items-center gap-x-2 ${className}`}
+      className={`flex items-center gap-x-2 ${className}`}
       variant={type}
       style={{
         backgroundColor: localStorage.theme !== "dark" ? (type === "contained" ? "#835414" : "") : (type === "contained" ? "#FFC480" : ""),
@@ -33,6 +42,7 @@ const ButtonC: React.FC<iProps> = ({
       {icon}
       {title}
     </Button>
+    </ThemeProvider>
   );
 };
 
