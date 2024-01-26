@@ -12,23 +12,50 @@ function Personalization() {
     switch (value) {
       case 1:
         document.documentElement.style.setProperty("--base-font-size", "12px");
+        localStorage.setItem("font","verySmall")
         break;
       case 2:
         document.documentElement.style.setProperty("--base-font-size", "14px");
+        localStorage.setItem("font","small")
         break;
       case 3:
         document.documentElement.style.setProperty("--base-font-size", "16px");
+        localStorage.setItem("font","medium")
         break;
       case 4:
         document.documentElement.style.setProperty("--base-font-size", "18px");
+        localStorage.setItem("font","large")
         break;
       case 5:
         document.documentElement.style.setProperty("--base-font-size", "20px");
+        localStorage.setItem("font","veryLarge")
         break;
       default:
         break;
     }
   };
+
+  useEffect(() => {
+    switch (root.getPropertyValue('--base-font-size')) {
+      case "12px":
+        setSelectedFont(1)
+        break;
+      case "14px":
+        setSelectedFont(2)
+        break;
+      case "16px":
+        setSelectedFont(3)
+        break;
+      case "18px":
+        setSelectedFont(4)
+        break;
+      case "20px":
+        setSelectedFont(5)
+        break;
+      default:
+        break;
+    }
+  }, [])
 
   return (
     <div>
@@ -43,14 +70,14 @@ function Personalization() {
             Text Size
           </span>{" "}
           <div className="w-4/5 flex items-center gap-x-4">
-            <span className="text-[16px]">very small</span>
+            <span className="text-on-surface dark:text-on-surface-dark text-[16px]">very small</span>
             <SliderC
               value={seelctedFont}
               max={5}
               min={1}
               handleChange={onSliderChange}
             />
-            <span className="text-[16px]">very large</span>
+            <span className="text-on-surface dark:text-on-surface-dark text-[16px]">very large</span>
           </div>
         </div>
         <div className="flex w-1/2 gap-x-6">

@@ -2,7 +2,7 @@ import { IconButton } from "@mui/material";
 
 interface iProps {
   icon: JSX.Element;
-  onClick: () => void;
+  onClick: (event?: React.MouseEvent<HTMLElement>) => void;
 }
 
 const IconButtonC: React.FC<iProps> = ({ icon, onClick }) => {

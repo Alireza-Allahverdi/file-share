@@ -16,7 +16,7 @@ const MenuItemC: React.FC<iProps> = ({ label, icon, selected }) => {
       }`}
     >
       {icon}
-      <span className="font-semibold text-sm">{label}</span>
+      <span className="font-semibold text-[0.875em]">{label}</span>
     </div>
   );
 };

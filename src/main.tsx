@@ -28,6 +28,28 @@ if (
   localStorage.theme = "light";
 }
 
+if (!!localStorage.getItem("font")) {
+  switch (localStorage.getItem("font")) {
+    case "verySmall":
+      document.documentElement.style.setProperty("--base-font-size", "12px");
+      break;
+    case "small":
+      document.documentElement.style.setProperty("--base-font-size", "14px");
+      break;
+    case "medium":
+      document.documentElement.style.setProperty("--base-font-size", "16px");
+      break;
+    case "large":
+      document.documentElement.style.setProperty("--base-font-size", "18px");
+      break;
+    case "veryLarge":
+      document.documentElement.style.setProperty("--base-font-size", "20px");
+      break;
+    default:
+      break;
+  }
+}
+
 const router = createBrowserRouter([
   {
     path: "/",

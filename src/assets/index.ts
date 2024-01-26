@@ -1,0 +1,1 @@
+export * as WebsiteIcon from "./websiteIcon.svg"
