@@ -33,16 +33,16 @@ import IconButtonC from "../../components/iconButton/IconButtonC";
 
 const Home = () => {
   const colors = [
-    "#F85541",
-    "#FE7340",
-    "#FACF6F",
-    "#4ED499",
-    "#28A56C",
-    "#A1E1E5",
-    "#4B8CDF",
-    "#B79FF7",
-    "#534435",
-    "#5F6368",
+    "bg-[#F85541]",
+    "bg-[#FE7340]",
+    "bg-[#FACF6F]",
+    "bg-[#4ED499]",
+    "bg-[#28A56C]",
+    "bg-[#A1E1E5]",
+    "bg-[#4B8CDF]",
+    "bg-[#B79FF7]",
+    "bg-[#534435]",
+    "bg-[#5F6368]",
   ];
 
   const theme = createTheme({
@@ -236,7 +236,7 @@ const Home = () => {
                           .map((color: string, index: number) => (
                             <div
                               key={index}
-                              className={`w-8 h-8 bg-[${color}] rounded-full cursor-pointer`}
+                              className={`w-8 h-8 ${color} rounded-full cursor-pointer`}
                             ></div>
                           ))}
                       </div>
@@ -244,7 +244,7 @@ const Home = () => {
                         {colors.slice(5).map((color: string, index: number) => (
                           <div
                             key={index}
-                            className={`w-8 h-8 bg-[${color}] rounded-full cursor-pointer`}
+                            className={`w-8 h-8 ${color} rounded-full cursor-pointer`}
                           ></div>
                         ))}
                       </div>

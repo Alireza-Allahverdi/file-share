@@ -15,6 +15,10 @@ import "./index.css";
 import Layout from "./components/layout/Layout.tsx";
 import Favorite from "./pages/favorite/Favorite.tsx";
 import Shared from "./pages/shared/Shared.tsx";
+import axios from "axios";
+
+axios.defaults.baseURL = "http://localhost:8000/api"
+axios.defaults.withCredentials = true
 
 if (
   localStorage.theme === "dark" ||

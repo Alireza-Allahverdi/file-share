@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
+import Input from "../../../components/input/Input";
+import { fetchAccount, updateAccount } from "../../../actions/apiActions";
 import ButtonC from "../../../components/button/ButtonC";
 import IconButtonC from "../../../components/iconButton/IconButtonC";
 import {
@@ -6,11 +8,47 @@ import {
   MdOutlineEdit,
   MdOutlineSave,
 } from "react-icons/md";
-import Input from "../../../components/input/Input";
+
+export type ProfileResponse = {
+  username: string;
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+  role: string;
+};
 
 function Account() {
-  const [userInfo, setUserInfo] = useState({});
+  const [userInfo, setUserInfo] = useState<ProfileResponse>();
   const [editMode, setEditMode] = useState<boolean>(false);
+
+  const fetchProfile = () => {
+    fetchAccount().then((res) => {
+      setUserInfo(res.data);
+    });
+  };
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (userInfo) {
+      setUserInfo({
+        ...userInfo,
+        [e.target.name]: e.target.value,
+      });
+    }
+  };
+
+  const saveChanges = () => {
+    if (userInfo) {
+      updateAccount(userInfo)
+      .then((res) => {
+        console.log(res);
+        
+      })
+    }      
+  }
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
   return (
     <div className="h-full">
@@ -22,47 +60,62 @@ function Account() {
               onClick={() => setEditMode(false)}
             />
           )}
-          <span className="text-[1.4em] text-on-surface dark:text-on-surface-dark">Account Info</span>
+          <span className="text-[1.4em] text-on-surface dark:text-on-surface-dark">
+            Account Info
+          </span>
         </div>
         <ButtonC
           className="w-max"
           title={!editMode ? "Edit Info" : "Save Changes"}
           type="contained"
-          icon={!editMode ? <MdOutlineEdit size={20} /> : <MdOutlineSave size={20} />}
-          onCLick={() => setEditMode(!editMode)}
+          icon={
+            !editMode ? (
+              <MdOutlineEdit size={20} />
+            ) : (
+              <MdOutlineSave size={20} />
+            )
+          }
+          onCLick={() => {
+            saveChanges()
+            setEditMode(!editMode)
+          }}
         />
       </div>
       <div className="w-full flex gap-x-[40px] py-6">
         <div className="flex flex-col w-full gap-y-6">
           <Input
             label="User Name"
-            value={""}
+            value={userInfo?.username}
             type="text"
+            name="username"
             disabled={!editMode}
-            onChange={(e) => console.log(e)}
+            onChange={handleChange}
           />
           <Input
             label="First Name"
-            value={""}
+            value={userInfo?.firstName}
             type="text"
+            name="firstName"
             disabled={!editMode}
-            onChange={(e) => console.log(e)}
+            onChange={handleChange}
           />
         </div>
         <div className="flex flex-col w-full gap-y-6">
           <Input
             label="Email"
-            value={""}
+            value={userInfo?.emailAddress}
             type="email"
+            name="emailAddress"
             disabled={!editMode}
-            onChange={(e) => console.log(e)}
+            onChange={handleChange}
           />
           <Input
             label="Last Name"
-            value={""}
+            value={userInfo?.lastName}
             type="text"
+            name="lastName"
             disabled={!editMode}
-            onChange={(e) => console.log(e)}
+            onChange={handleChange}
           />
         </div>
       </div>

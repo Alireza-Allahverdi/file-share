@@ -4,7 +4,8 @@ interface iProps {
   className?: string;
   type: string;
   label: string;
-  value: string | number;
+  name?: string
+  value: string | number | undefined;
   errorText?: string;
   disabled?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -14,6 +15,7 @@ const Input: React.FC<iProps> = ({
   className,
   type,
   label,
+  name,
   value,
   disabled,
   errorText,
@@ -37,7 +39,8 @@ const Input: React.FC<iProps> = ({
         className={className}
         error={!!errorText}
         type={type}
-        label={label}
+        name={name}
+        label={!disabled ? label : ""}
         value={value}
         helperText={errorText}
         disabled={disabled}
