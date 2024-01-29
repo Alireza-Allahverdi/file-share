@@ -26,8 +26,8 @@ function ServerSetting() {
     getStorageUsage()
       .then((res) => {
         setStorage({
-          total: (res.data.totalSpace / 1_000_000_000).toFixed(1),
-          usage: (res.data.totalUsage / 1_000_000_000).toFixed(1),
+          total: parseInt((res.data.totalSpace / 1_000_000_000).toFixed(1)),
+          usage: parseInt((res.data.totalUsage / 1_000_000_000).toFixed(1)),
         });
       })
       .catch((err) => {
@@ -38,7 +38,7 @@ function ServerSetting() {
   const fetchUserStorage = () => {
     getUserStorage()
       .then((res) => {
-        setUserStorage((res.data / 1_000_000_000).toFixed(1));
+        setUserStorage(parseInt((res.data / 1_000_000_000).toFixed(1)));
       })
       .catch((err) => {
         console.log(err);
@@ -66,16 +66,16 @@ function ServerSetting() {
   };
 
   const updateRegisteration = () => {
-changeRegisteration(!registeration)
-.then((res) => {
-  fetchRegisteration()
-  setStatusModal(false)
-// todo toast
-})
-.catch((err) => {
-   // todo toast
-})
-  }
+    changeRegisteration(!registeration)
+      .then((res) => {
+        fetchRegisteration();
+        setStatusModal(false);
+        // todo toast
+      })
+      .catch((err) => {
+        // todo toast
+      });
+  };
 
   useEffect(() => {
     fetchRegisteration();
@@ -100,7 +100,11 @@ changeRegisteration(!registeration)
               type="outlined"
               onCLick={() => setStatusModal(false)}
             />
-            <ButtonC title="Save" type="contained" onCLick={updateRegisteration} />
+            <ButtonC
+              title="Save"
+              type="contained"
+              onCLick={updateRegisteration}
+            />
           </div>
         </div>
       </ModalC>
@@ -146,7 +150,13 @@ changeRegisteration(!registeration)
                 className="w-4/6"
                 label="User Storage"
                 type="text"
-                value={!capacityEditMode ? `${!!userStorage ? userStorage :0} GB` : !!userStorage ? userStorage :0}
+                value={
+                  !capacityEditMode
+                    ? `${!!userStorage ? userStorage : 0} GB`
+                    : !!userStorage
+                    ? userStorage
+                    : 0
+                }
                 disabled={!capacityEditMode}
                 onChange={(e) => setUserStorage(parseInt(e.target.value))}
               />
@@ -163,9 +173,9 @@ changeRegisteration(!registeration)
               }
               onCLick={() => {
                 if (capacityEditMode) {
-                  changeUserStorage()
+                  changeUserStorage();
                 }
-                setCapacityEditMode(!capacityEditMode)
+                setCapacityEditMode(!capacityEditMode);
               }}
             />
             {capacityEditMode ? (
