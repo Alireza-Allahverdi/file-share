@@ -175,7 +175,7 @@ const Folders = () => {
 
   const fetchFileInfo = (id: string, isFolder: boolean) => {
     getFileInfo(id, isFolder).then((res) => {
-      setSelectedFileContent(res.data)
+      setSelectedFileContent(res.data);
     });
   };
 
@@ -524,22 +524,42 @@ const Folders = () => {
               onClick={() => {}}
             />
           </div>
-          <div className="flex flex-col gap-y-3">
-<div className="flex justify-between">
-  <span className="w-1/3 text-on-surface dark:text-on-surface-dark">info</span>
-</div>
-<div className="flex justify-between">
-  <span className="w-1/3 text-on-surface dark:text-on-surface-dark">info</span>
-</div>
-<div className="flex justify-between">
-  <span className="w-1/3 text-on-surface dark:text-on-surface-dark">info</span>
-</div>
-<div className="flex justify-between">
-  <span className="w-1/3 text-on-surface dark:text-on-surface-dark">info</span>
-</div>
-<div className="flex justify-between">
-  <span className="w-1/3 text-on-surface dark:text-on-surface-dark">info</span>
-</div>
+          <div className="flex flex-col gap-y-3 py-6">
+            <div className="flex justify-between">
+              <span className="w-1/3 text-on-surface dark:text-on-surface-dark text-[1.2em] font-semibold">
+                Info
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="w-1/3 text-on-surface dark:text-on-surface-dark text-[1em]">
+                Description
+              </span>
+              <span className="w-2/3 text-on-surface dark:text-on-surface-dark text-[1em]">
+                {selectedFileContent?.description}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="w-1/3 text-on-surface dark:text-on-surface-dark text-[1em]">
+                Tags
+              </span>
+              <div className="flex flex-wrap gap-x-1">
+                {selectedFileContent.tags.map((item) => (
+                  <div className="py-1 px-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant-dark border border-outline dark:border-outline-dark">
+                    Shared
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="flex justify-between">
+              <span className="w-1/3 text-on-surface dark:text-on-surface-dark text-[1em]">
+                File Size
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="w-1/3 text-on-surface dark:text-on-surface-dark text-[1em]">
+                Sharing Status
+              </span>
+            </div>
           </div>
         </div>
       ) : null}

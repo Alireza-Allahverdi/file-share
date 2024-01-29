@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
-import ButtonC from "../../../components/button/ButtonC";
-import Input from "../../../components/input/Input";
 import { GiCheckedShield } from "react-icons/gi";
 import { MdOutlineSave } from "react-icons/md";
-import ModalC from "../../../components/modal/ModalC";
 import {
   changeRegisteration,
   getRegisteration,
@@ -11,6 +8,9 @@ import {
   getUserStorage,
   updateUserStorage,
 } from "../../../actions/apiActions";
+import ButtonC from "../../../components/button/ButtonC";
+import Input from "../../../components/input/Input";
+import ModalC from "../../../components/modal/ModalC";
 
 function ServerSetting() {
   const [storage, setStorage] = useState<{
@@ -91,9 +91,6 @@ function ServerSetting() {
         handleClose={() => setStatusModal(false)}
       >
         <div className="flex flex-col gap-y-6">
-          <span className="text-on-surface dark:text-on-surface-dark">
-            Are you sure
-          </span>
           <div className="flex justify-end gap-x-2">
             <ButtonC
               title="Cancel"

@@ -1,8 +1,3 @@
-import { useEffect, useState } from "react";
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import IconButtonC from "../iconButton/IconButtonC";
-import MenuItemC from "../menuItem/MenuItemC";
-import ModalC from "../modal/ModalC";
 import { ThemeProvider } from "@emotion/react";
 import {
   Avatar,
@@ -13,8 +8,9 @@ import {
   ListItemText,
   createTheme,
 } from "@mui/material";
-import ButtonC from "../button/ButtonC";
-import { WebsiteIcon } from "../../assets";
+import { useEffect, useState } from "react";
+import { FaGithub, FaRegUser } from "react-icons/fa6";
+import { FiServer } from "react-icons/fi";
 import {
   MdExitToApp,
   MdOutlineDashboardCustomize,
@@ -23,9 +19,13 @@ import {
   MdOutlineInfo,
   MdOutlineShield,
 } from "react-icons/md";
-import { FaGithub, FaRegUser } from "react-icons/fa6";
-import { FiServer } from "react-icons/fi";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { fetchAccount, logOut } from "../../actions/apiActions";
+import { WebsiteIcon } from "../../assets";
+import ButtonC from "../button/ButtonC";
+import IconButtonC from "../iconButton/IconButtonC";
+import MenuItemC from "../menuItem/MenuItemC";
+import ModalC from "../modal/ModalC";
 
 function OptionLayout() {
   const location = useLocation();
@@ -65,11 +65,6 @@ function OptionLayout() {
       label: "Server Settings",
       icon: <FiServer size={24} />,
       link: "server",
-    },
-    {
-      label: "Log Out",
-      icon: <MdExitToApp size={24} />,
-      link: "/auth/signin",
     },
   ];
 
@@ -126,6 +121,17 @@ function OptionLayout() {
               />
             </Link>
           ))}
+          <Link to={"/auth/signin"} onClick={logOut}>
+            <MenuItemC
+              label={"Log Out"}
+              icon={<MdExitToApp size={24} />}
+              selected={
+                location.pathname.split("/")[
+                  location.pathname.split("/").length - 1
+                ] === "/auth/signin"
+              }
+            />
+          </Link>
         </div>
         <div className="flex-[0.8] bg-on-primary dark:bg-on-primary-dark rounded-2xl py-6 px-14 shadow-[#0000004D] shadow-sm">
           <Outlet />
