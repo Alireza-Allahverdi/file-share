@@ -127,7 +127,7 @@ const Layout = () => {
             </Link>
           ))}
           <div className="mt-auto">
-            <p>Storage</p>
+            <p className="border-on-surface-variant dark:border-on-surface-variant-dark">Storage</p>
             <div className="w-full h-3 p-[1px] rounded-[11px] border border-on-surface-variant dark:border-on-surface-variant-dark my-2">
               <div
                 className={

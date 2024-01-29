@@ -26,11 +26,14 @@ import {
   MdOutlineKeyboardArrowRight,
   MdOutlineShare,
   MdOutlineStarOutline,
+  MdOutlineStarPurple500,
 } from "react-icons/md";
 import {
   createNewFolder,
   fetchAccount,
   getCredentials,
+  getFolderContent,
+  getPath,
   logOut,
 } from "../../actions/apiActions";
 import { useNavigate, useParams } from "react-router-dom";
@@ -38,7 +41,22 @@ import { GoArrowLeft } from "react-icons/go";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import IconButtonC from "../../components/iconButton/IconButtonC";
 
+export type folderContentTypes = {
+  creationDate: string;
+  iconColor: string;
+  id: string;
+  isFavorite: boolean;
+  itemType: string;
+  isShared: boolean;
+  name: string;
+  size: number;
+}[];
+
 const Folders = () => {
+  const BILION = 1_000_000_000;
+  const MILION = 1_000_000;
+  const THOUSAND = 1_000;
+
   const colors = [
     "bg-[#F85541]",
     "bg-[#FE7340]",
@@ -60,6 +78,14 @@ const Folders = () => {
 
   const { id } = useParams();
   const navigate = useNavigate();
+
+  //folder path
+  const [folderPath, setFolderPath] = useState<string>("");
+  // folder content
+  const [totalData, setTotalData] = useState<number>(0);
+  const [page, setPage] = useState<number>(1);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
+  const [folderContent, setFolderContent] = useState<folderContentTypes>([]);
   // new folder
   const [newFolderName, setNewFolderName] = useState<string>("");
   const [newFolderModal, setNewFolderModal] = useState<boolean>(false);
@@ -92,6 +118,36 @@ const Folders = () => {
       });
   };
 
+  const fetchFolderPath = () => {
+    if (id) {
+      getPath(id, true)
+        .then((res) => {
+          setFolderPath(res.data);
+        })
+        .catch(() => {
+          // todo toast sth wring
+        });
+    }
+  };
+
+  const fetchFolderContent = (newPage: number, newRowsPerPage: number) => {
+    if (id) {
+      getFolderContent({
+        id,
+        page: newPage,
+        rowsPerPage: newRowsPerPage,
+      })
+        .then((res) => {
+          console.log(res.data);
+          setTotalData(res.data.itemsCount);
+          setFolderContent(res.data.data);
+        })
+        .catch((err) => {
+          // todo toast sth wrong
+        });
+    }
+  };
+
   const handleCreatingFolder = () => {
     if (id) {
       createNewFolder({
@@ -100,7 +156,8 @@ const Folders = () => {
       })
         .then((res) => {
           console.log(res);
-          setNewFolderModal(false)
+          setNewFolderModal(false);
+          fetchFolderContent(1, rowsPerPage);
           // todo success modal
         })
         .catch(() => {
@@ -108,6 +165,11 @@ const Folders = () => {
         });
     }
   };
+
+  useEffect(() => {
+    fetchFolderPath();
+    fetchFolderContent(1, 10);
+  }, [id]);
 
   return (
     <div>
@@ -138,9 +200,14 @@ const Folders = () => {
         </div>
       </ModalC>
       <div className="flex justify-between py-4 border-b border-b-on-surface dark:border-b-on-surface-dark">
-        <span className="text-[1.4em] text-on-surface dark:text-on-surface-dark">
-          Home
-        </span>
+        <div className="flex flex-col">
+          <span className="text-[1.4em] text-on-surface dark:text-on-surface-dark">
+            Home
+          </span>
+          <span className="text-[0.8em] text-on-surface-variant dark:text-on-surface-variant-dark">
+            {folderPath}
+          </span>
+        </div>
         <ButtonC
           title="New Folder"
           type="outlined"
@@ -174,133 +241,170 @@ const Folders = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableRow>
-              <TableCell component="th" scope="row">
-                <div className="flex items-center gap-x-3">
-                  <MdOutlineFolder
-                    size={24}
-                    className="text-on-surface dark:text-on-surface-dark"
-                  />
-                  <span className="text-on-surface dark:text-on-surface-dark">
-                    FOLDER NAME
-                  </span>
-                  <div className="py-1 px-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant-dark border border-outline dark:border-outline-dark">
-                    Shared
-                  </div>
-                  <MdOutlineStarOutline
-                    className="text-on-surface-variant"
-                    size={20}
-                  />
-                </div>
-              </TableCell>
-              <TableCell className="text-on-surface dark:text-on-surface-dark">
-                1402/10/11
-              </TableCell>
-              <TableCell className="text-on-surface dark:text-on-surface-dark">
-                500 MB
-              </TableCell>
-              <TableCell className="text-on-surface dark:text-on-surface-dark">
-                <IconButton
-                  aria-label="more"
-                  id="long-button"
-                  onClick={handleClickOption}
-                  className="text-on-surface dark:text-on-surface-dark"
-                >
-                  <BsThreeDotsVertical />
-                </IconButton>
-                <ThemeProvider theme={theme}>
-                  <Menu
-                    anchorEl={anchorEl}
-                    open={tableOptionState}
-                    onClose={handleOptionClose}
+            {folderContent.length !== 0 &&
+              folderContent.map((item) => (
+                <TableRow key={item.id}>
+                  <TableCell
+                    component="th"
+                    scope="row"
+                    className="cursor-pointer"
+                    onClick={() =>
+                      navigate(`/folders/${id}?searchId=${item.id}`, {
+                        replace: true,
+                      })
+                    }
+                    onDoubleClick={() => navigate(`/folders/${item.id}`)}
                   >
-                    <MenuItem
-                      onClick={() => {
-                        // there will be a value saving aswell
-                        setAnchorEl(null);
-                        setMoveFileModal(true);
-                      }}
-                    >
-                      <div className="flex items-center gap-x-3">
-                        <MdOutlineDriveFileMove size={20} />
-                        <span>Move Item</span>
-                      </div>
-                    </MenuItem>
-                    <MenuItem
-                      onClick={(e) => setCustomizeAnchorEl(e.currentTarget)}
-                    >
-                      <div className="flex items-center gap-x-3">
-                        <MdOutlineFormatPaint size={20} />
-                        <span>Customize</span>
-                        <span>
-                          <MdOutlineKeyboardArrowRight />
-                        </span>
-                      </div>
-                    </MenuItem>
-                    <MenuItem>
-                      <div className="flex items-center gap-x-3">
-                        <MdOutlineFileDownload size={20} />
-                        <span>Download</span>
-                      </div>
-                    </MenuItem>
-                    <MenuItem>
-                      <div className="flex items-center gap-x-3">
-                        <MdOutlineShare size={20} />
-                        <span>Share</span>
-                      </div>
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => {
-                        setAnchorEl(null);
-                        setDeleteModal(true);
-                      }}
-                    >
-                      <div className="flex items-center gap-x-3">
-                        <MdOutlineDeleteOutline size={20} />
-                        <span>Delete</span>
-                      </div>
-                    </MenuItem>
-                  </Menu>
-                  <Menu
-                    anchorEl={customizeAnchorEl}
-                    open={customizeState}
-                    onClose={() => {
-                      setAnchorEl(null);
-                      setCustomizeAnchorEl(null);
-                    }}
-                  >
-                    <div className="flex flex-col gap-2 p-2">
-                      <div className="flex gap-2">
-                        {colors
-                          .slice(0, 5)
-                          .map((color: string, index: number) => (
-                            <div
-                              key={index}
-                              className={`w-8 h-8 ${color} rounded-full cursor-pointer`}
-                            ></div>
-                          ))}
-                      </div>
-                      <div className="flex gap-2">
-                        {colors.slice(5).map((color: string, index: number) => (
-                          <div
-                            key={index}
-                            className={`w-8 h-8 ${color} rounded-full cursor-pointer`}
-                          ></div>
-                        ))}
-                      </div>
+                    <div className="flex items-center gap-x-3">
+                      {item.itemType === "Folder" ? (
+                        <MdOutlineFolder size={24} color={item.iconColor} />
+                      ) : null}
+                      <span className="text-on-surface dark:text-on-surface-dark">
+                        {item.name}
+                      </span>
+                      {item.itemType === "Folder" ? null : item.isShared ? (
+                        <div className="py-1 px-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant-dark border border-outline dark:border-outline-dark">
+                          Shared
+                        </div>
+                      ) : null}
+                      {item.isFavorite ? (
+                        <MdOutlineStarPurple500
+                          className="text-on-surface-variant dark:text-on-surface-variant-dark"
+                          size={20}
+                        />
+                      ) : (
+                        <MdOutlineStarOutline
+                          className="text-on-surface-variant"
+                          size={20}
+                        />
+                      )}
                     </div>
-                  </Menu>
-                </ThemeProvider>
-              </TableCell>
-            </TableRow>
+                  </TableCell>
+                  <TableCell className="text-on-surface dark:text-on-surface-dark">
+                    {item.creationDate.slice(0, 10)}
+                  </TableCell>
+                  <TableCell className="text-on-surface dark:text-on-surface-dark">
+                    {item.itemType === "Folder"
+                      ? null
+                      : item.size > BILION
+                      ? `${(item.size / BILION).toFixed(1)} GB`
+                      : item.size > MILION
+                      ? `${(item.size / BILION).toFixed(1)} MB`
+                      : item.size > THOUSAND
+                      ? `${(item.size / BILION).toFixed(1)} KB`
+                      : `${item.size.toFixed(1)} B`}
+                  </TableCell>
+                  <TableCell className="text-on-surface dark:text-on-surface-dark">
+                    <IconButton
+                      aria-label="more"
+                      id="long-button"
+                      onClick={handleClickOption}
+                      className="text-on-surface dark:text-on-surface-dark"
+                    >
+                      <BsThreeDotsVertical />
+                    </IconButton>
+                    <ThemeProvider theme={theme}>
+                      <Menu
+                        anchorEl={anchorEl}
+                        open={tableOptionState}
+                        onClose={handleOptionClose}
+                      >
+                        <MenuItem
+                          onClick={() => {
+                            // there will be a value saving aswell
+                            setAnchorEl(null);
+                            setMoveFileModal(true);
+                          }}
+                        >
+                          <div className="flex items-center gap-x-3">
+                            <MdOutlineDriveFileMove size={20} />
+                            <span>Move Item</span>
+                          </div>
+                        </MenuItem>
+                        <MenuItem
+                          onClick={(e) => setCustomizeAnchorEl(e.currentTarget)}
+                        >
+                          <div className="flex items-center gap-x-3">
+                            <MdOutlineFormatPaint size={20} />
+                            <span>Customize</span>
+                            <span>
+                              <MdOutlineKeyboardArrowRight />
+                            </span>
+                          </div>
+                        </MenuItem>
+                        <MenuItem>
+                          <div className="flex items-center gap-x-3">
+                            <MdOutlineFileDownload size={20} />
+                            <span>Download</span>
+                          </div>
+                        </MenuItem>
+                        <MenuItem>
+                          <div className="flex items-center gap-x-3">
+                            <MdOutlineShare size={20} />
+                            <span>Share</span>
+                          </div>
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => {
+                            setAnchorEl(null);
+                            setDeleteModal(true);
+                          }}
+                        >
+                          <div className="flex items-center gap-x-3">
+                            <MdOutlineDeleteOutline size={20} />
+                            <span>Delete</span>
+                          </div>
+                        </MenuItem>
+                      </Menu>
+                      <Menu
+                        anchorEl={customizeAnchorEl}
+                        open={customizeState}
+                        onClose={() => {
+                          setAnchorEl(null);
+                          setCustomizeAnchorEl(null);
+                        }}
+                      >
+                        <div className="flex flex-col gap-2 p-2">
+                          <div className="flex gap-2">
+                            {colors
+                              .slice(0, 5)
+                              .map((color: string, index: number) => (
+                                <div
+                                  key={index}
+                                  className={`w-8 h-8 ${color} rounded-full cursor-pointer`}
+                                ></div>
+                              ))}
+                          </div>
+                          <div className="flex gap-2">
+                            {colors
+                              .slice(5)
+                              .map((color: string, index: number) => (
+                                <div
+                                  key={index}
+                                  className={`w-8 h-8 ${color} rounded-full cursor-pointer`}
+                                ></div>
+                              ))}
+                          </div>
+                        </div>
+                      </Menu>
+                    </ThemeProvider>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
         <PaginationC
-          itemsCount={100}
-          page={0}
-          rowsPerPage={10}
-          onPageChange={(e, newPage) => console.log(newPage)}
-          onRowsPerPageChange={(e) => console.log(parseInt(e.target.value, 10))}
+          itemsCount={totalData}
+          page={page - 1}
+          rowsPerPage={rowsPerPage}
+          onPageChange={(e, newPage) => {
+            setPage(newPage);
+            fetchFolderContent(newPage, rowsPerPage);
+          }}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10));
+            fetchFolderContent(1, parseInt(e.target.value, 10));
+          }}
         />
       </div>
       <ModalC

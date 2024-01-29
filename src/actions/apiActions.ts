@@ -111,15 +111,56 @@ export const getUserStorageUsage = async () => {
 };
 
 export const getRootFolder = async () => {
-  const res = await axios.get(apiRoutes.items.foldersRoot)
-  return res
-}
+  const res = await axios.get(apiRoutes.items.foldersRoot);
+  return res;
+};
 
-export const createNewFolder = async (data: {name: string, parentId: string}) => {
-  const res = await axios.post(apiRoutes.items.newFolder, data)
-  return res
-}
+export const createNewFolder = async (data: {
+  name: string;
+  parentId: string;
+}) => {
+  const res = await axios.post(apiRoutes.items.newFolder, data);
+  return res;
+};
 
-export const getPath = async () => {
-  
-}
+export const getPath = async (id: string, isFolder: boolean) => {
+  const res = await axios.get(apiRoutes.items.itemsPath(id), {
+    params: { isFolder },
+  });
+  return res;
+};
+
+export const getFolderContent = async (data: {
+  id: string;
+  page: number;
+  rowsPerPage: number;
+  onlyFolders?: boolean;
+  searchText?: string;
+}) => {
+  let dataForParams: {
+    page: number;
+    perPage: number;
+    onlyFolders?: boolean;
+    searchText?: string;
+  } = {
+    page: data.page,
+    perPage: data.rowsPerPage,
+  };
+  if (data.onlyFolders) {
+    dataForParams.onlyFolders = data.onlyFolders;
+  }
+  if (data.searchText) {
+    dataForParams.searchText = data.searchText;
+  }
+  const res = await axios.get(apiRoutes.items.foldersId(data.id), {
+    params: dataForParams,
+  });
+  return res;
+};
+
+export const getFavorites = async (data: { page: number; perPage: number }) => {
+  const res = await axios.get(apiRoutes.items.favorites, {
+    params: data,
+  });
+  return res;
+};
