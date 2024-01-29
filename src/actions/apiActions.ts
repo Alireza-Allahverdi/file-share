@@ -27,9 +27,9 @@ export const fetchAccount = async () => {
 };
 
 export const logOut = async () => {
-  const res  = await axios.get(apiRoutes.auth.logOut)
-  return res
-}
+  const res = await axios.get(apiRoutes.auth.logOut);
+  return res;
+};
 
 export const updateAccount = async (data: ProfileResponse) => {
   const res = await axios.put(apiRoutes.account.profile, data);
@@ -42,10 +42,9 @@ export const getRegisteration = async () => {
 };
 
 export const changeRegisteration = async (status: boolean) => {
-  const res = await axios.put(
-    apiRoutes.system.registeration,
-    { newStatus: status },
-  );
+  const res = await axios.put(apiRoutes.system.registeration, {
+    newStatus: status,
+  });
   return res;
 };
 
@@ -55,10 +54,9 @@ export const getUserStorage = async () => {
 };
 
 export const updateUserStorage = async (size: number) => {
-  const res = await axios.put(
-    apiRoutes.system.userStorage,
-    { newSize: size * 1000000000 },
-  );
+  const res = await axios.put(apiRoutes.system.userStorage, {
+    newSize: size * 1000000000,
+  });
   return res;
 };
 
@@ -68,11 +66,18 @@ export const getStorageUsage = async () => {
 };
 
 export const getCredentials = async () => {
-  const res = await axios.get(apiRoutes.account.secretKey)
-  return res
-}
+  const res = await axios.get(apiRoutes.account.secretKey);
+  return res;
+};
 
 export const sendKey = async (key: string) => {
-  const res = await axios.put(apiRoutes.account.secretKey, {key})
-  return res
-}
+  const res = await axios.put(apiRoutes.account.secretKey, { key });
+  return res;
+};
+
+export const getUsers = async (data: { page: number; perPage: number }) => {
+  const res = await axios.get(apiRoutes.system.users, {
+    params: { page: data.page, perPage: data.perPage },
+  });
+  return res;
+};

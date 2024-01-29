@@ -1,13 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import IconButtonC from "../iconButton/IconButtonC";
 import MenuItemC from "../menuItem/MenuItemC";
 import ModalC from "../modal/ModalC";
 import { ThemeProvider } from "@emotion/react";
-import { Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText, createTheme } from "@mui/material";
+import {
+  Avatar,
+  Divider,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  createTheme,
+} from "@mui/material";
 import ButtonC from "../button/ButtonC";
 import { WebsiteIcon } from "../../assets";
 import {
+  MdExitToApp,
   MdOutlineDashboardCustomize,
   MdOutlineGroup,
   MdOutlineHome,
@@ -16,13 +25,14 @@ import {
 } from "react-icons/md";
 import { FaGithub, FaRegUser } from "react-icons/fa6";
 import { FiServer } from "react-icons/fi";
+import { fetchAccount, logOut } from "../../actions/apiActions";
 
 function OptionLayout() {
-
-  const location = useLocation()
-  const navigate = useNavigate()
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const [aboutModalState, setAboutModalState] = useState<boolean>(false);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
   const theme = createTheme({
     palette: {
@@ -56,22 +66,55 @@ function OptionLayout() {
       icon: <FiServer size={24} />,
       link: "server",
     },
-  ];  
+    {
+      label: "Log Out",
+      icon: <MdExitToApp size={24} />,
+      link: "/auth/signin",
+    },
+  ];
+
+  useEffect(() => {
+    fetchAccount()
+      .then((res) => {
+        if (res.data.role !== "Basic") {
+          setIsAdmin(true);
+        }
+      })
+      .catch((err) => {
+        navigate("/auth/signin");
+      });
+  }, []);
 
   return (
     <div className="flex flex-col w-full h-screen px-2 bg-surface-container dark:bg-surface-container-dark">
       <div className="flex justify-end py-2 px-8 gap-x-2">
         <div className="flex items-center gap-x-2 mr-auto">
           <img src={WebsiteIcon.default} alt="" />
-          <span className="text-3xl text-on-surface dark:text-on-surface-dark">IE Project</span>
+          <span className="text-3xl text-on-surface dark:text-on-surface-dark">
+            IE Project
+          </span>
         </div>
-        <IconButtonC icon={<MdOutlineInfo size={24} />} onClick={() => setAboutModalState(true)} />
-        <IconButtonC icon={<MdOutlineHome size={24} />} onClick={() => navigate("/")} />
+        <IconButtonC
+          icon={<MdOutlineInfo size={24} />}
+          onClick={() => setAboutModalState(true)}
+        />
+        <IconButtonC
+          icon={<MdOutlineHome size={24} />}
+          onClick={() => navigate("/")}
+        />
       </div>
       <div className="flex justify-between h-full py-2">
         <div className="flex flex-col flex-[0.2] gap-y-4 p-6">
-          {options.map((item) => (
-            <Link to={item.link}>
+          {options.slice(0, !isAdmin ? 3 : 6).map((item, index) => (
+            <Link
+              key={index}
+              to={item.link}
+              onClick={() => {
+                if (item.label === "Log Out") {
+                  logOut();
+                }
+              }}
+            >
               <MenuItemC
                 label={item.label}
                 icon={item.icon}

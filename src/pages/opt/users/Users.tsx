@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -14,6 +14,7 @@ import SwitchC from "../../../components/switch/SwitchC";
 import PaginationC from "../../../components/pagination/PaginationC";
 import Input from "../../../components/input/Input";
 import { Formik } from "formik";
+import { getUsers } from "../../../actions/apiActions";
 
 type registerTypes = {
   userName: string;
@@ -25,8 +26,13 @@ type registerTypes = {
 };
 
 function Users() {
-  const [newUserModalState, setNewUserModalState] = useState<boolean>(false);
 
+  const [userData, setUserData] = useState({
+    
+  })
+  const [page, setPage] = useState<number>(1);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
+  const [newUserModalState, setNewUserModalState] = useState<boolean>(false);
 
   const initialValue: registerTypes = {
     userName: "",
@@ -68,13 +74,28 @@ function Users() {
       errorMsg.confirmPassword = "add password confirmation";
     }
     if (values.password !== values.confirmPassword) {
-      errorMsg.confirmPassword = "password and password confirmation are not the same"
+      errorMsg.confirmPassword =
+        "password and password confirmation are not the same";
     }
     return errorMsg;
   };
 
   const handleRegisterUser = (values: registerTypes) => {};
 
+  const fetchUsers = (newPage: number, newRowsPerPage: number) => {
+    getUsers({
+      page: newPage,
+      perPage: newRowsPerPage,
+    })
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {});
+  };
+
+  useEffect(() => {
+    fetchUsers(1, 10);
+  }, []);
 
   return (
     <div>
@@ -85,67 +106,108 @@ function Users() {
       >
         <div>
           <div className="flex flex-col gap-y-4">
-          <Formik
-        initialValues={initialValue}
-        validate={validate}
-        onSubmit={handleRegisterUser}
-      >
-        {({ values,touched, errors, setFieldValue, handleSubmit }) => {
-          return (
-            <Fragment>
-              <p className="text-[1em]">Enter the info for the new user:</p>
-              <Input
-                label="First Name"
-                type="text"
-                value={values.firstName}
-                errorText={touched.firstName && !!errors.firstName ? errors.firstName : ""}
-                onChange={(e) => setFieldValue("firstName", e.target.value)}
-              />
-              <Input
-                label="last Name"
-                type="text"
-                value={values.lastName}
-                errorText={touched.lastName && !!errors.lastName ? errors.lastName : ""}
-                onChange={(e) => setFieldValue("lastName", e.target.value)}
-              />
-              <Input
-                label="User Name"
-                type="text"
-                value={values.userName}
-                errorText={touched.userName && !!errors.userName ? errors.userName : ""}
-                onChange={(e) => setFieldValue("userName", e.target.value)}
-              />
-              <Input
-                label="Email Address"
-                type="email"
-                value={values.email}
-                errorText={touched.email && !!errors.email ? errors.email : ""}
-                onChange={(e) => setFieldValue("email", e.target.value)}
-              />
-              <Input
-                label="Password"
-                type="password"
-                value={values.password}
-                errorText={touched.password && !!errors.password ? errors.password : ""}
-                onChange={(e) => setFieldValue("password", e.target.value)}
-              />
-              <Input
-                label="Confirm Password"
-                type="password"
-                value={values.confirmPassword}
-                errorText={touched.confirmPassword && !!errors.confirmPassword ? errors.confirmPassword : ""}
-                onChange={(e) =>
-                  setFieldValue("confirmPassword", e.target.value)
-                }
-              />
-              <div className="flex justify-end items-center gap-x-2 mt-2">
-                <ButtonC title="Cancel" type="outlined" onCLick={() => setNewUserModalState(false)} />
-                <ButtonC title="Add" type="contained" icon={<PiPlusBold />} onCLick={handleSubmit} />
-              </div>
-            </Fragment>
-          );
-        }}
-      </Formik>
+            <Formik
+              initialValues={initialValue}
+              validate={validate}
+              onSubmit={handleRegisterUser}
+            >
+              {({ values, touched, errors, setFieldValue, handleSubmit }) => {
+                return (
+                  <Fragment>
+                    <p className="text-[1em]">
+                      Enter the info for the new user:
+                    </p>
+                    <Input
+                      label="First Name"
+                      type="text"
+                      value={values.firstName}
+                      errorText={
+                        touched.firstName && !!errors.firstName
+                          ? errors.firstName
+                          : ""
+                      }
+                      onChange={(e) =>
+                        setFieldValue("firstName", e.target.value)
+                      }
+                    />
+                    <Input
+                      label="last Name"
+                      type="text"
+                      value={values.lastName}
+                      errorText={
+                        touched.lastName && !!errors.lastName
+                          ? errors.lastName
+                          : ""
+                      }
+                      onChange={(e) =>
+                        setFieldValue("lastName", e.target.value)
+                      }
+                    />
+                    <Input
+                      label="User Name"
+                      type="text"
+                      value={values.userName}
+                      errorText={
+                        touched.userName && !!errors.userName
+                          ? errors.userName
+                          : ""
+                      }
+                      onChange={(e) =>
+                        setFieldValue("userName", e.target.value)
+                      }
+                    />
+                    <Input
+                      label="Email Address"
+                      type="email"
+                      value={values.email}
+                      errorText={
+                        touched.email && !!errors.email ? errors.email : ""
+                      }
+                      onChange={(e) => setFieldValue("email", e.target.value)}
+                    />
+                    <Input
+                      label="Password"
+                      type="password"
+                      value={values.password}
+                      errorText={
+                        touched.password && !!errors.password
+                          ? errors.password
+                          : ""
+                      }
+                      onChange={(e) =>
+                        setFieldValue("password", e.target.value)
+                      }
+                    />
+                    <Input
+                      label="Confirm Password"
+                      type="password"
+                      value={values.confirmPassword}
+                      errorText={
+                        touched.confirmPassword && !!errors.confirmPassword
+                          ? errors.confirmPassword
+                          : ""
+                      }
+                      onChange={(e) =>
+                        setFieldValue("confirmPassword", e.target.value)
+                      }
+                    />
+                    <div className="flex justify-end items-center gap-x-2 mt-2">
+                      <ButtonC
+                        title="Cancel"
+                        type="outlined"
+                        onCLick={() => setNewUserModalState(false)}
+                      />
+                      <ButtonC
+                        title="Add"
+                        type="contained"
+                        icon={<PiPlusBold />}
+                        onCLick={handleSubmit}
+                      />
+                    </div>
+                  </Fragment>
+                );
+              }}
+            </Formik>
           </div>
         </div>
       </ModalC>
@@ -223,10 +285,13 @@ function Users() {
         </Table>
         <PaginationC
           itemsCount={100}
-          page={0}
-          rowsPerPage={10}
+          page={page - 1}
+          rowsPerPage={rowsPerPage}
           onPageChange={(e, newPage) => console.log(newPage)}
-          onRowsPerPageChange={(e) => console.log(parseInt(e.target.value, 10))}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10));
+            fetchUsers(1, parseInt(e.target.value, 10));
+          }}
         />
       </div>
     </div>

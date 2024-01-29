@@ -1,13 +1,87 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ButtonC from "../../../components/button/ButtonC";
 import Input from "../../../components/input/Input";
 import { GiCheckedShield } from "react-icons/gi";
 import { MdOutlineSave } from "react-icons/md";
 import ModalC from "../../../components/modal/ModalC";
+import {
+  changeRegisteration,
+  getRegisteration,
+  getStorageUsage,
+  getUserStorage,
+  updateUserStorage,
+} from "../../../actions/apiActions";
 
 function ServerSetting() {
+  const [storage, setStorage] = useState<{
+    total: number;
+    usage: number;
+  }>();
+  const [userStorage, setUserStorage] = useState<number>(0);
+  const [registeration, setRegisteration] = useState<boolean>(false);
   const [capacityEditMode, setCapacityEditMode] = useState<boolean>(false);
   const [statusModal, setStatusModal] = useState<boolean>(false);
+
+  const fetchStorageUsage = () => {
+    getStorageUsage()
+      .then((res) => {
+        setStorage({
+          total: res.data.totalSpace / 1_000_000_000,
+          usage: res.data.totalUsage / 1_000_000_000,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const fetchUserStorage = () => {
+    getUserStorage()
+      .then((res) => {
+        setUserStorage(res.data / 1_000_000_000);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const changeUserStorage = () => {
+    updateUserStorage(userStorage)
+      .then((res) => {
+        // TODO toast
+      })
+      .catch((err) => {
+        // TODO toast
+      });
+  };
+
+  const fetchRegisteration = () => {
+    getRegisteration()
+      .then((res) => {
+        setRegisteration(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const updateRegisteration = () => {
+changeRegisteration(!registeration)
+.then((res) => {
+  fetchRegisteration()
+  setStatusModal(false)
+// todo toast
+})
+.catch((err) => {
+   // todo toast
+})
+  }
+
+  useEffect(() => {
+    fetchRegisteration();
+    fetchStorageUsage();
+    fetchUserStorage();
+  }, []);
 
   return (
     <div>
@@ -26,7 +100,7 @@ function ServerSetting() {
               type="outlined"
               onCLick={() => setStatusModal(false)}
             />
-            <ButtonC title="Save" type="contained" onCLick={() => {}} />
+            <ButtonC title="Save" type="contained" onCLick={updateRegisteration} />
           </div>
         </div>
       </ModalC>
@@ -42,8 +116,13 @@ function ServerSetting() {
               Storage Usage
             </span>
             <div className="w-[80%] p-[1px] h-6 rounded-[11px] border border-on-surface-variant dark:border-on-surface-variant-dark ml-auto">
-              <div className={"min-w-[35px] w-1/2 h-full px-1 rounded-[11px] bg-primary text-on-primary dark:text-on-primary-dark dark:bg-primary-dark text-right text-sm"}>
-                50%
+              <div
+                className={`min-w-[35px] h-full px-1 rounded-[11px] bg-primary text-on-primary dark:text-on-primary-dark dark:bg-primary-dark text-right text-sm`}
+                style={{
+                  width: storage && (storage?.usage / storage?.total) * 100,
+                }}
+              >
+                {storage && (storage?.usage / storage?.total) * 100}%
               </div>
             </div>
           </div>
@@ -53,7 +132,7 @@ function ServerSetting() {
               in which can be used to manage files by users.
             </span>
             <span className="text-on-surface dark:text-on-surface-dark text-xs">
-              (56GB / 100GB is Used)
+              ({storage?.usage}GB / {storage?.total}GB is Used)
             </span>
           </div>
         </div>
@@ -67,8 +146,9 @@ function ServerSetting() {
                 className="w-4/6"
                 label="User Storage"
                 type="text"
-                value={!capacityEditMode ? "50 GB" : "50"}
+                value={!capacityEditMode ? `${!!userStorage ? userStorage :0} GB` : !!userStorage ? userStorage :0}
                 disabled={!capacityEditMode}
+                onChange={(e) => setUserStorage(parseInt(e.target.value))}
               />
             </div>
             <ButtonC
@@ -81,7 +161,12 @@ function ServerSetting() {
                   <MdOutlineSave size={20} />
                 )
               }
-              onCLick={() => setCapacityEditMode(!capacityEditMode)}
+              onCLick={() => {
+                if (capacityEditMode) {
+                  changeUserStorage()
+                }
+                setCapacityEditMode(!capacityEditMode)
+              }}
             />
             {capacityEditMode ? (
               <ButtonC
@@ -104,7 +189,7 @@ function ServerSetting() {
                 Registration
               </span>
               <span className="w-4/6 text-on-surface-variant dark:text-on-surface-variant-dark">
-                Open to everyone
+                {registeration ? "Open to everyone" : "Admin only"}
               </span>
             </div>
             <ButtonC

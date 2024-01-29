@@ -10,6 +10,7 @@ export const apiRoutes = {
     changePassword: "/Account/change-password"
   },
   system: {
+    users: "/System/users",
     userStorage: "/System/user-storage",
     storageUsage: "/System/storage-usage",
     registeration: "/System/registration"

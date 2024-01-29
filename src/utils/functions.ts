@@ -1,3 +1,5 @@
+import CryptoJS from "crypto-js";
+
 export const makeid = (length: number) => {
   let result = '';
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
