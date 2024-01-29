@@ -164,3 +164,10 @@ export const getFavorites = async (data: { page: number; perPage: number }) => {
   });
   return res;
 };
+
+export const getFileInfo = async (id: string,isFolder: boolean) => {
+  const res = await axios.get(apiRoutes.items.itemsInfo(id), {
+    params: { isFolder },
+  });
+  return res;
+};

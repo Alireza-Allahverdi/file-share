@@ -143,7 +143,7 @@ const Layout = () => {
             </div>
           </div>
         </div>
-        <div className="flex-[0.8] bg-on-primary dark:bg-on-primary-dark rounded-2xl py-6 px-14 shadow-[#0000004D] shadow-sm">
+        <div className="flex-[0.8]">
           <Outlet />
         </div>
       </div>
