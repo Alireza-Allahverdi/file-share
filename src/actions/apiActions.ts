@@ -26,6 +26,13 @@ export const fetchAccount = async () => {
   return res;
 };
 
+export const changePassword = async (newPassword: string) => {
+  const res = await axios.put(apiRoutes.account.changePassword, {
+    newPassword,
+  });
+  return res;
+};
+
 export const logOut = async () => {
   const res = await axios.get(apiRoutes.auth.logOut);
   return res;
@@ -97,3 +104,22 @@ export const chnageREstrictaion = async (id: string, newStatus: boolean) => {
   const res = await axios.put(`${apiRoutes.system.users}/${id}`, { newStatus });
   return res;
 };
+
+export const getUserStorageUsage = async () => {
+  const res = await axios.get(apiRoutes.items.storageUsage);
+  return res;
+};
+
+export const getRootFolder = async () => {
+  const res = await axios.get(apiRoutes.items.foldersRoot)
+  return res
+}
+
+export const createNewFolder = async (data: {name: string, parentId: string}) => {
+  const res = await axios.post(apiRoutes.items.newFolder, data)
+  return res
+}
+
+export const getPath = async () => {
+  
+}

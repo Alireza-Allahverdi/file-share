@@ -16,6 +16,8 @@ import Layout from "./components/layout/Layout.tsx";
 import Favorite from "./pages/favorite/Favorite.tsx";
 import Shared from "./pages/shared/Shared.tsx";
 import axios from "axios";
+import CustomLink from "./pages/customLink/CustomLink.tsx";
+import Folders from "./pages/folders/Folders.tsx";
 
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL
 axios.defaults.headers.common["Content-Type"] = "application/json"
@@ -63,6 +65,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Home />,
+      },
+      {
+        path: "folders/:id",
+        element: <Folders />
       },
       {
         path: "favorite",
@@ -114,6 +120,10 @@ const router = createBrowserRouter([
       },
     ],
   },
+  {
+    path: "/customlink/:id",
+    element: <CustomLink />
+  }
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

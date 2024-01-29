@@ -11,7 +11,7 @@ import {
   MdOutlineStarOutline,
 } from "react-icons/md";
 import { WebsiteIcon } from "../../assets";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ModalC from "../modal/ModalC";
 import Dropzone from "react-dropzone";
 import {
@@ -25,6 +25,11 @@ import {
   createTheme,
 } from "@mui/material";
 import { FaGithub } from "react-icons/fa6";
+import {
+  fetchAccount,
+  getUserStorageUsage,
+  logOut,
+} from "../../actions/apiActions";
 
 const Layout = () => {
   const location = useLocation();
@@ -56,7 +61,28 @@ const Layout = () => {
 
   const [aboutModalState, setAboutModalState] = useState<boolean>(false);
   const [uploadModalState, setUploadModalState] = useState<boolean>(false);
+  const [storage, setStorage] = useState<{ total: number; usage: number }>({
+    total: 0,
+    usage: 0,
+  });
   const [progress, setProgress] = useState<number>(0);
+
+  useEffect(() => {
+    fetchAccount()
+      .then(() => {
+        getUserStorageUsage().then((res) => {
+          setStorage({
+            usage: parseInt((res.data.totalUsage / 1_000_000_000).toFixed(1)),
+            total: parseInt((res.data.totalSpace / 1_000_000_000).toFixed(1)),
+          });
+        });
+      })
+      .catch((err) => {
+        logOut().then(() => {
+          navigate("/auth/signin");
+        });
+      });
+  }, []);
 
   return (
     <div className="flex flex-col w-full h-screen px-2 bg-surface-container dark:bg-surface-container-dark">
@@ -91,9 +117,11 @@ const Layout = () => {
                 label={item.label}
                 icon={item.icon}
                 selected={
-                  location.pathname.split("/")[
-                    location.pathname.split("/").length - 1
-                  ] === item.link
+                  item.link === ""
+                    ? location.pathname.includes("folders") || item.link === ""
+                    : location.pathname.split("/")[
+                        location.pathname.split("/").length - 1
+                      ] === item.link
                 }
               />
             </Link>
@@ -101,11 +129,16 @@ const Layout = () => {
           <div className="mt-auto">
             <p>Storage</p>
             <div className="w-full h-3 p-[1px] rounded-[11px] border border-on-surface-variant dark:border-on-surface-variant-dark my-2">
-              <div className={"w-1/2 h-full px-1 rounded-[11px] bg-primary text-on-primary dark:text-on-primary-dark dark:bg-primary-dark text-right text-sm"} />
+              <div
+                className={
+                  "h-full px-1 rounded-[11px] bg-primary text-on-primary dark:text-on-primary-dark dark:bg-primary-dark text-right text-sm"
+                }
+                style={{ width: `${(storage.usage / storage.total) * 100}%` }}
+              />
             </div>
             <div className="text-end">
               <span className="text-on-surface dark:text-on-surface-dark text-xs">
-                (56GB / 100GB is Used)
+                ({storage.usage}GB / {storage.total}GB is Used)
               </span>
             </div>
           </div>

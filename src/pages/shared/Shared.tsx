@@ -32,7 +32,7 @@ function Shared() {
               </TableCell>
               <TableCell className="text-on-surface dark:text-on-surface-dark">
                 <div className="flex items-center cursor-pointer">
-                  <span className="">Creation Date</span>
+                  <span className="">Share Date</span>
                   <MdOutlineKeyboardArrowDown size={18} />
                 </div>
               </TableCell>

@@ -6,12 +6,60 @@ import {
   MdOutlineContentCopy,
   MdOutlineSave,
 } from "react-icons/md";
-import { getCredentials } from "../../../actions/apiActions";
-import { decrypt } from "../../../utils/functions";
+import {
+  changePassword,
+  getCredentials,
+  sendKey,
+} from "../../../actions/apiActions";
+import { decrypt, encrypt } from "../../../utils/functions";
+import CryptoJS from "crypto-js";
+import ModalC from "../../../components/modal/ModalC";
 
 function Security() {
+  const [newPassword, setNewPassword] = useState<string>("");
   const [editMode, setEditMode] = useState<boolean>(false);
   const [secretKey, setSecretKey] = useState<string>("");
+  const [changePasswordModal, setChangePasswordModal] =
+    useState<boolean>(false);
+
+  const handleChangePassword = () => {
+    const newPassHash256 = CryptoJS.SHA256(newPassword).toString(
+      CryptoJS.enc.Hex
+    );
+    const newPassSha512 = CryptoJS.SHA512(newPassword).toString(
+      CryptoJS.enc.Hex
+    );
+    getCredentials()
+      .then((res) => {
+        const sha256Pass = localStorage.getItem("shaPass");
+        if (sha256Pass) {
+          changePassword(newPassSha512)
+            .then(() => {
+              const decryptedKey = decrypt(
+                res.data.key,
+                sha256Pass,
+                res.data.iv
+              );
+              const encryptKey = encrypt(
+                decryptedKey,
+                newPassHash256,
+                res.data.iv
+              );
+              sendKey(encryptKey).then(() => {
+                localStorage.setItem("shaPass", newPassSha512);
+                setChangePasswordModal(false);
+                // todo toast new pass change success
+              });
+            })
+            .catch((error) => {
+              // todo toast error
+            });
+        }
+      })
+      .catch((err) => {
+        // todo toast
+      });
+  };
 
   useEffect(() => {
     getCredentials()
@@ -29,6 +77,30 @@ function Security() {
 
   return (
     <div>
+      <ModalC
+        title="Are you sure?"
+        open={changePasswordModal}
+        handleClose={() => setChangePasswordModal(false)}
+      >
+        <div className="flex flex-col gap-y-6">
+          <span className="text-on-surface dark:text-on-surface-dark">
+            Are you sure
+          </span>
+          <div className="flex justify-end gap-x-2">
+            <ButtonC
+              title="Cancel"
+              type="outlined"
+              onCLick={() => setChangePasswordModal(false)}
+            />
+            <ButtonC
+              title="Save"
+              type="contained"
+              onCLick={handleChangePassword}
+            />
+          </div>
+        </div>
+      </ModalC>
+
       <div className="flex justify-between py-4 border-b border-b-on-surface dark:border-b-on-surface-dark">
         <span className="text-[1.4em] text-on-surface dark:text-on-surface-dark">
           Security
@@ -43,9 +115,10 @@ function Security() {
             <Input
               className="w-4/5"
               label="password"
-              value={""}
+              value={newPassword}
               type="password"
               disabled={!editMode}
+              onChange={(e) => setNewPassword(e.target.value)}
             />
           </div>
           <ButtonC
@@ -59,7 +132,12 @@ function Security() {
                 <MdOutlineSave size={20} />
               )
             }
-            onCLick={() => setEditMode(!editMode)}
+            onCLick={() => {
+              if (editMode) {
+                setChangePasswordModal(true);
+              }
+              setEditMode(!editMode);
+            }}
           />
           {editMode ? (
             <ButtonC
@@ -88,7 +166,7 @@ function Security() {
               type="contained"
               icon={<MdOutlineContentCopy size={18} />}
               onCLick={() => {
-                navigator.clipboard.writeText(secretKey)
+                navigator.clipboard.writeText(secretKey);
                 // todo toast
               }}
             />
