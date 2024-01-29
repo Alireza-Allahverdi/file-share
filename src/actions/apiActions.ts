@@ -81,3 +81,19 @@ export const getUsers = async (data: { page: number; perPage: number }) => {
   });
   return res;
 };
+
+export const addNewUser = async (data: {
+  username: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+}) => {
+  const res = await axios.post(apiRoutes.system.users, data);
+  return res;
+};
+
+export const chnageREstrictaion = async (id: string, newStatus: boolean) => {
+  const res = await axios.put(`${apiRoutes.system.users}/${id}`, { newStatus });
+  return res;
+};

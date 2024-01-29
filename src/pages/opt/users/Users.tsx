@@ -14,7 +14,12 @@ import SwitchC from "../../../components/switch/SwitchC";
 import PaginationC from "../../../components/pagination/PaginationC";
 import Input from "../../../components/input/Input";
 import { Formik } from "formik";
-import { getUsers } from "../../../actions/apiActions";
+import {
+  addNewUser,
+  chnageREstrictaion,
+  getUsers,
+} from "../../../actions/apiActions";
+import CryptoJS from "crypto-js";
 
 type registerTypes = {
   userName: string;
@@ -25,11 +30,18 @@ type registerTypes = {
   confirmPassword: string;
 };
 
-function Users() {
+type userDataTypes = {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+  restricted: boolean;
+}[];
 
-  const [userData, setUserData] = useState({
-    
-  })
+function Users() {
+  const [userData, setUserData] = useState<userDataTypes>([]);
+  const [totalData, setTotalData] = useState<number>(1);
   const [page, setPage] = useState<number>(1);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [newUserModalState, setNewUserModalState] = useState<boolean>(false);
@@ -44,17 +56,14 @@ function Users() {
   };
 
   const validate = (values: registerTypes) => {
-    let errorMsg: registerTypes = {
-      userName: "",
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    };
-    // if (!Object.keys(values).every((item) => values[item])) {
-
-    // }
+    let errorMsg: {
+      userName?: string;
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      password?: string;
+      confirmPassword?: string;
+    } = {};
     if (!values.firstName) {
       errorMsg.firstName = "add first name";
     }
@@ -80,7 +89,27 @@ function Users() {
     return errorMsg;
   };
 
-  const handleRegisterUser = (values: registerTypes) => {};
+  const handleRegisterUser = (values: registerTypes) => {
+    const hashPass = CryptoJS.SHA512(values.password).toString(
+      CryptoJS.enc.Hex
+    );
+    addNewUser({
+      emailAddress: values.email,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      password: hashPass,
+      username: values.userName,
+    })
+      .then((res) => {
+        // todo toast
+        fetchUsers(1, rowsPerPage);
+        setNewUserModalState(false);
+      })
+      .catch((err) => {
+        // todo toast
+        setNewUserModalState(false);
+      });
+  };
 
   const fetchUsers = (newPage: number, newRowsPerPage: number) => {
     getUsers({
@@ -88,9 +117,22 @@ function Users() {
       perPage: newRowsPerPage,
     })
       .then((res) => {
+        setUserData(res.data.data);
+        setTotalData(res.data.itemsCount);
         console.log(res.data);
       })
       .catch((err) => {});
+  };
+
+  const handleRestrictionChange = (newStatus: boolean, id: string) => {
+    let cloneData = [...userData];
+    let objectIndex = userData.findIndex((item) => item.id === id);
+    let cloneObject = { ...userData[objectIndex] };
+    chnageREstrictaion(id, newStatus).then((res) => {
+      cloneObject.restricted = newStatus;
+      cloneData[objectIndex] = cloneObject;
+      setUserData(cloneData);
+    });
   };
 
   useEffect(() => {
@@ -114,7 +156,7 @@ function Users() {
               {({ values, touched, errors, setFieldValue, handleSubmit }) => {
                 return (
                   <Fragment>
-                    <p className="text-[1em]">
+                    <p className="text-on-surface dark:text-on-surface-dark text-[1em]">
                       Enter the info for the new user:
                     </p>
                     <Input
@@ -225,7 +267,7 @@ function Users() {
       </div>
       <div className="w-full flex flex-col gap-y-6 py-6">
         <span className="text-on-surface dark:text-on-surface-dark">
-          Total of 50 users are registered in this server
+          Total of {totalData} users are registered in this server
         </span>
         <Table sx={{ minWidth: "100%" }} aria-label="simple table">
           <TableHead>
@@ -248,46 +290,51 @@ function Users() {
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableRow>
-              <TableCell component="th" scope="row">
-                <div className="flex items-center gap-x-3">
-                  <FaRegUser
-                    size={24}
-                    className="text-on-surface dark:text-on-surface-dark"
-                  />
-                  <div className="flex flex-col text-md">
-                    <span className="text-on-surface dark:text-on-surface-dark">
-                      item
-                    </span>
-                    <span className="text-on-surface dark:text-on-surface-dark">
-                      list item
-                    </span>
-                  </div>
-                </div>
-              </TableCell>
-              <TableCell className="text-on-surface dark:text-on-surface-dark">
-                first name
-              </TableCell>
-              <TableCell className="text-on-surface dark:text-on-surface-dark">
-                last name
-              </TableCell>
-              <TableCell className="text-on-surface dark:text-on-surface-dark">
-                email adddresss
-              </TableCell>
-              <TableCell className="text-on-surface dark:text-on-surface-dark">
-                <SwitchC
-                  checked={true}
-                  onChange={(checkStatus) => console.log(checkStatus)}
-                />
-              </TableCell>
-            </TableRow>
+            {userData.length !== 0 &&
+              userData.map((item) => (
+                <TableRow key={item.id}>
+                  <TableCell component="th" scope="row">
+                    <div className="flex items-center gap-x-3">
+                      <FaRegUser
+                        size={24}
+                        className="text-on-surface dark:text-on-surface-dark"
+                      />
+                      <div className="flex flex-col text-md">
+                        <span className="text-on-surface dark:text-on-surface-dark">
+                          {item?.username}
+                        </span>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-on-surface dark:text-on-surface-dark">
+                    {item?.firstName}
+                  </TableCell>
+                  <TableCell className="text-on-surface dark:text-on-surface-dark">
+                    {item?.lastName}
+                  </TableCell>
+                  <TableCell className="text-on-surface dark:text-on-surface-dark">
+                    {item?.emailAddress}
+                  </TableCell>
+                  <TableCell className="text-on-surface dark:text-on-surface-dark">
+                    <SwitchC
+                      checked={item?.restricted}
+                      onChange={(checkStatus) =>
+                        handleRestrictionChange(checkStatus, item.id)
+                      }
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
         <PaginationC
-          itemsCount={100}
+          itemsCount={totalData}
           page={page - 1}
           rowsPerPage={rowsPerPage}
-          onPageChange={(e, newPage) => console.log(newPage)}
+          onPageChange={(e, newPage) => {
+            setPage(newPage);
+            fetchUsers(newPage, rowsPerPage);
+          }}
           onRowsPerPageChange={(e) => {
             setRowsPerPage(parseInt(e.target.value, 10));
             fetchUsers(1, parseInt(e.target.value, 10));
