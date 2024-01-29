@@ -26,8 +26,8 @@ function ServerSetting() {
     getStorageUsage()
       .then((res) => {
         setStorage({
-          total: res.data.totalSpace / 1_000_000_000,
-          usage: res.data.totalUsage / 1_000_000_000,
+          total: (res.data.totalSpace / 1_000_000_000).toFixed(1),
+          usage: (res.data.totalUsage / 1_000_000_000).toFixed(1),
         });
       })
       .catch((err) => {
@@ -38,7 +38,7 @@ function ServerSetting() {
   const fetchUserStorage = () => {
     getUserStorage()
       .then((res) => {
-        setUserStorage(res.data / 1_000_000_000);
+        setUserStorage((res.data / 1_000_000_000).toFixed(1));
       })
       .catch((err) => {
         console.log(err);
