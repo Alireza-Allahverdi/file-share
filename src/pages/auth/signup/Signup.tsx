@@ -4,8 +4,9 @@ import Input from "../../../components/input/Input";
 import ButtonC from "../../../components/button/ButtonC";
 import { MdLogin, MdOutlineModeEdit } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
-import { signUp } from "../../../actions/apiActions";
+import { getCredentials, sendKey, signUp } from "../../../actions/apiActions";
 import CryptoJS from "crypto-js";
+import { encrypt } from "../../../utils/functions";
 
 type signUpTypes = {
   userName: string;
@@ -66,9 +67,41 @@ function Signup() {
     return errorMsg;
   };
 
+  const handleUserKey = (password: string) => {
+    const hash256Pass = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
+    getCredentials()
+      .then((res) => {
+        if (!res.data.key) {
+          let key = CryptoJS.lib.WordArray.random(32).toString(
+            CryptoJS.enc.Hex
+          );
+          let encrypted = encrypt(key, hash256Pass, res.data.iv);
+          sendKey(encrypted)
+            .then((res) => {
+              console.log(res);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+        // else {
+        //   let decrypted = decrypt(res.data.key, hash256Pass, res.data.iv);
+        //   console.log(decrypted);
+        // }
+        // TODO toast the successful signup
+        localStorage.setItem("shaPass", hash256Pass);
+        navigate("/");
+      })
+      .catch((err) => {
+        // TODO toast the problem with encryption
+        console.log(err);
+      });
+  };
+
   const handleSignUp = (values: signUpTypes) => {
-    const base64Pass = CryptoJS.enc.Base64.parse(values.password);
-    const hashPass = CryptoJS.SHA512(base64Pass).toString(CryptoJS.enc.Hex);
+    const hashPass = CryptoJS.SHA512(values.password).toString(
+      CryptoJS.enc.Hex
+    );
     signUp({
       username: values.userName,
       firstName: values.firstName,
@@ -78,12 +111,11 @@ function Signup() {
     })
       .then((res) => {
         if (res.status === 200) {
-          // TODO toast the successful signup
-          navigate("/");
+          handleUserKey(values.password);
         }
       })
       .catch((err) => {
-        // TODO toast when error
+        // TODO toast the unsuccessful signup
         console.log(err);
       });
   };

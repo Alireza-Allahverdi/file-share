@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ButtonC from "../../components/button/ButtonC";
 import ModalC from "../../components/modal/ModalC";
 import Input from "../../components/input/Input";
@@ -27,6 +27,8 @@ import {
   MdOutlineShare,
   MdOutlineStarOutline,
 } from "react-icons/md";
+import { fetchAccount, getCredentials, logOut } from "../../actions/apiActions";
+import { useNavigate } from "react-router-dom";
 import { GoArrowLeft } from "react-icons/go";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import IconButtonC from "../../components/iconButton/IconButtonC";
@@ -51,6 +53,7 @@ const Home = () => {
     },
   });
 
+  const navigate = useNavigate();
   // new folder
   const [newFolderName, setNewFolderName] = useState<string>("");
   const [newFolderModal, setNewFolderModal] = useState<boolean>(false);
@@ -63,7 +66,7 @@ const Home = () => {
   // move file
   const [moveFileModal, setMoveFileModal] = useState<boolean>(false);
   // delete file
-  const [deleteModal, setDeleteModal] = useState<boolean>(false)
+  const [deleteModal, setDeleteModal] = useState<boolean>(false);
 
   const handleClickOption = (e: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(e.currentTarget);
@@ -72,6 +75,28 @@ const Home = () => {
   const handleOptionClose = () => {
     setAnchorEl(null);
   };
+
+  const fetchCredentials = () => {
+    getCredentials()
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    fetchAccount()
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        logOut().then((res) => {
+          navigate("/auth/signin");
+        });
+      });
+  }, []);
 
   return (
     <div>
@@ -209,11 +234,11 @@ const Home = () => {
                         <span>Share</span>
                       </div>
                     </MenuItem>
-                    <MenuItem 
-                    onClick={() => {
-                      setAnchorEl(null)
-                      setDeleteModal(true)
-                    }}
+                    <MenuItem
+                      onClick={() => {
+                        setAnchorEl(null);
+                        setDeleteModal(true);
+                      }}
                     >
                       <div className="flex items-center gap-x-3">
                         <MdOutlineDeleteOutline size={20} />
@@ -309,7 +334,7 @@ const Home = () => {
               />
             </div>
           </div>
-                      <div className="flex justify-end gap-x-2">
+          <div className="flex justify-end gap-x-2">
             <ButtonC
               title="Cancel"
               type="outlined"
@@ -326,25 +351,24 @@ const Home = () => {
       >
         <div className="flex flex-col gap-y-6">
           <span className="text-on-surface dark:text-on-surface-dark">
-          Are you sure
+            Are you sure
           </span>
           <div className="flex justify-end gap-x-2">
-            <ButtonC 
-            title="Cancel"
-            type="outlined"
-            onCLick={() => setDeleteModal(false)}
+            <ButtonC
+              title="Cancel"
+              type="outlined"
+              onCLick={() => setDeleteModal(false)}
             />
-            <ButtonC 
-            title="Delete"
-            type="contained"
-            onCLick={() => {
-              // delete file
-            }}
+            <ButtonC
+              title="Delete"
+              type="contained"
+              onCLick={() => {
+                // delete file
+              }}
             />
           </div>
         </div>
       </ModalC>
-
     </div>
   );
 };

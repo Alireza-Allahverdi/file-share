@@ -4,8 +4,9 @@ import ButtonC from "../../../components/button/ButtonC";
 import Input from "../../../components/input/Input";
 import CryptoJS from "crypto-js";
 import { Formik } from "formik";
-import { logInReq } from "../../../actions/apiActions";
+import { getCredentials, logInReq, sendKey } from "../../../actions/apiActions";
 import { MdLogin, MdOutlineModeEdit } from "react-icons/md";
+import { decrypt, encrypt, makeid } from "../../../utils/functions";
 
 type loginValueTypes = {
   userName: string;
@@ -13,8 +14,7 @@ type loginValueTypes = {
 };
 
 function Signin() {
-
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const initialValue: loginValueTypes = {
     userName: "",
@@ -35,19 +35,51 @@ function Signin() {
     return errorMsg;
   };
 
+  const handleUserKey = (password: string) => {
+    const hash256Pass = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
+    getCredentials()
+      .then((res) => {
+        if (!res.data.key) {
+          let key = CryptoJS.lib.WordArray.random(32).toString(
+            CryptoJS.enc.Hex
+          );
+          let encrypted = encrypt(key, hash256Pass, res.data.iv);
+          sendKey(encrypted)
+            .then((res) => {
+              console.log(res);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+        // else {
+        //   let decrypted = decrypt(res.data.key, hash256Pass, res.data.iv);
+        //   console.log(decrypted);
+        // }
+        // TODO toast the successful signin
+        localStorage.setItem("shaPass", hash256Pass);
+        navigate("/");
+      })
+      .catch((err) => {
+        // TODO toast the error in encryption
+        console.log(err);
+      });
+  };
+
   const handleLogin = (values: loginValueTypes) => {
-    const base64Pass = CryptoJS.enc.Base64.parse(values.password);
-    const hashPass = CryptoJS.SHA512(base64Pass).toString(CryptoJS.enc.Hex);    
+    const hashPass = CryptoJS.SHA512(values.password).toString(
+      CryptoJS.enc.Hex
+    );
     logInReq({ username: values.userName, password: hashPass })
-    .then((res) => {
-      if (res.status === 200) {
-              // TODO toast the successful signin
-        navigate("/")
-      }
-    }).catch((err) => {
-      // TODO toast when error
-      console.log(err.data);
-    })
+      .then((res) => {
+        if (res.status === 200) {
+          handleUserKey(values.password);
+        }
+      })
+      .catch((err) => {
+        // TODO toast the unsuccessful signin
+        console.log(err.data);
+      });
   };
 
   return (

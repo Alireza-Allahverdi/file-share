@@ -18,19 +18,15 @@ function ServerSetting() {
       >
         <div className="flex flex-col gap-y-6">
           <span className="text-on-surface dark:text-on-surface-dark">
-          Are you sure
+            Are you sure
           </span>
           <div className="flex justify-end gap-x-2">
-            <ButtonC 
-            title="Cancel"
-            type="outlined"
-            onCLick={() => setStatusModal(false)}
+            <ButtonC
+              title="Cancel"
+              type="outlined"
+              onCLick={() => setStatusModal(false)}
             />
-            <ButtonC 
-            title="Save"
-            type="contained"
-            onCLick={() => {}}
-            />
+            <ButtonC title="Save" type="contained" onCLick={() => {}} />
           </div>
         </div>
       </ModalC>
@@ -46,7 +42,9 @@ function ServerSetting() {
               Storage Usage
             </span>
             <div className="w-[80%] p-[1px] h-6 rounded-[11px] border border-on-surface-variant dark:border-on-surface-variant-dark ml-auto">
-<div className={"min-w-[35px] w-1/2 h-full px-1 rounded-[11px] bg-primary text-on-primary dark:text-on-primary-dark dark:bg-primary-dark text-right text-sm"}>50%</div>
+              <div className={"min-w-[35px] w-1/2 h-full px-1 rounded-[11px] bg-primary text-on-primary dark:text-on-primary-dark dark:bg-primary-dark text-right text-sm"}>
+                50%
+              </div>
             </div>
           </div>
           <div className="flex justify-between">
@@ -54,7 +52,9 @@ function ServerSetting() {
               This bar displays the total space usage and available on your host
               in which can be used to manage files by users.
             </span>
-            <span className="text-on-surface dark:text-on-surface-dark text-xs">(56GB / 100GB is Used)</span>
+            <span className="text-on-surface dark:text-on-surface-dark text-xs">
+              (56GB / 100GB is Used)
+            </span>
           </div>
         </div>
         <div className="flex flex-col">
@@ -92,7 +92,7 @@ function ServerSetting() {
             ) : null}
           </div>
           <div className="flex justify-between">
-            <span className="w-1/2 text-xs">
+            <span className="w-1/2 text-xs text-on-surface dark:text-on-surface-dark">
               Shows the maximum space usable by each user in this host.
             </span>
           </div>
@@ -115,7 +115,7 @@ function ServerSetting() {
             />
           </div>
           <div className="flex justify-between">
-            <span className="w-1/2 text-xs">
+            <span className="w-1/2 text-xs text-on-surface dark:text-on-surface-dark">
               This option will allow or disallow public registration by guests
               in you host.
             </span>
