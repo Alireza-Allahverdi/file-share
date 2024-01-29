@@ -1,11 +1,11 @@
+import CryptoJS from "crypto-js";
 import { Formik } from "formik";
 import { Fragment } from "react";
-import Input from "../../../components/input/Input";
-import ButtonC from "../../../components/button/ButtonC";
 import { MdLogin, MdOutlineModeEdit } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import { getCredentials, sendKey, signUp } from "../../../actions/apiActions";
-import CryptoJS from "crypto-js";
+import ButtonC from "../../../components/button/ButtonC";
+import Input from "../../../components/input/Input";
 import { encrypt } from "../../../utils/functions";
 
 type signUpTypes = {
@@ -72,7 +72,7 @@ function Signup() {
     getCredentials()
       .then((res) => {
         if (!res.data.key) {
-          let key = CryptoJS.lib.WordArray.random(32).toString(
+          let key = CryptoJS.lib.WordArray.random(64).toString(
             CryptoJS.enc.Hex
           );
           let encrypted = encrypt(key, hash256Pass, res.data.iv);
@@ -99,9 +99,9 @@ function Signup() {
   };
 
   const handleSignUp = (values: signUpTypes) => {
-    const hashPass = CryptoJS.SHA512(values.password).toString(
-      CryptoJS.enc.Hex
-    );
+    const hashPass = CryptoJS.SHA512(values.password)
+      .toString(CryptoJS.enc.Hex)
+      .toUpperCase();
     signUp({
       username: values.userName,
       firstName: values.firstName,

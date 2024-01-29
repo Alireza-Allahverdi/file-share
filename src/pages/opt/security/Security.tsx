@@ -1,6 +1,5 @@
+import CryptoJS from "crypto-js";
 import { useEffect, useState } from "react";
-import ButtonC from "../../../components/button/ButtonC";
-import Input from "../../../components/input/Input";
 import {
   MdLockOutline,
   MdOutlineContentCopy,
@@ -11,9 +10,10 @@ import {
   getCredentials,
   sendKey,
 } from "../../../actions/apiActions";
-import { decrypt, encrypt } from "../../../utils/functions";
-import CryptoJS from "crypto-js";
+import ButtonC from "../../../components/button/ButtonC";
+import Input from "../../../components/input/Input";
 import ModalC from "../../../components/modal/ModalC";
+import { decrypt, encrypt } from "../../../utils/functions";
 
 function Security() {
   const [newPassword, setNewPassword] = useState<string>("");
@@ -26,9 +26,9 @@ function Security() {
     const newPassHash256 = CryptoJS.SHA256(newPassword).toString(
       CryptoJS.enc.Hex
     );
-    const newPassSha512 = CryptoJS.SHA512(newPassword).toString(
-      CryptoJS.enc.Hex
-    );
+    const newPassSha512 = CryptoJS.SHA512(newPassword)
+      .toString(CryptoJS.enc.Hex)
+      .toUpperCase();
     getCredentials()
       .then((res) => {
         const sha256Pass = localStorage.getItem("shaPass");
@@ -83,9 +83,6 @@ function Security() {
         handleClose={() => setChangePasswordModal(false)}
       >
         <div className="flex flex-col gap-y-6">
-          <span className="text-on-surface dark:text-on-surface-dark">
-            Are you sure
-          </span>
           <div className="flex justify-end gap-x-2">
             <ButtonC
               title="Cancel"
