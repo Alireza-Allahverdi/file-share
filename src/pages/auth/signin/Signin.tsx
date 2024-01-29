@@ -1,12 +1,12 @@
-import { Fragment } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import ButtonC from "../../../components/button/ButtonC";
-import Input from "../../../components/input/Input";
 import CryptoJS from "crypto-js";
 import { Formik } from "formik";
-import { getCredentials, logInReq, sendKey } from "../../../actions/apiActions";
+import { Fragment } from "react";
 import { MdLogin, MdOutlineModeEdit } from "react-icons/md";
-import { decrypt, encrypt, makeid } from "../../../utils/functions";
+import { Link, useNavigate } from "react-router-dom";
+import { getCredentials, logInReq, sendKey } from "../../../actions/apiActions";
+import ButtonC from "../../../components/button/ButtonC";
+import Input from "../../../components/input/Input";
+import { encrypt } from "../../../utils/functions";
 
 type loginValueTypes = {
   userName: string;
@@ -40,7 +40,7 @@ function Signin() {
     getCredentials()
       .then((res) => {
         if (!res.data.key) {
-          let key = CryptoJS.lib.WordArray.random(32).toString(
+          let key = CryptoJS.lib.WordArray.random(64).toString(
             CryptoJS.enc.Hex
           );
           let encrypted = encrypt(key, hash256Pass, res.data.iv);
@@ -67,9 +67,9 @@ function Signin() {
   };
 
   const handleLogin = (values: loginValueTypes) => {
-    const hashPass = CryptoJS.SHA512(values.password).toString(
-      CryptoJS.enc.Hex
-    );
+    const hashPass = CryptoJS.SHA512(values.password)
+      .toString(CryptoJS.enc.Hex)
+      .toUpperCase();
     logInReq({ username: values.userName, password: hashPass })
       .then((res) => {
         if (res.status === 200) {

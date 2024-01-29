@@ -469,9 +469,6 @@ const Folders = () => {
         handleClose={() => setDeleteModal(false)}
       >
         <div className="flex flex-col gap-y-6">
-          <span className="text-on-surface dark:text-on-surface-dark">
-            Are you sure
-          </span>
           <div className="flex justify-end gap-x-2">
             <ButtonC
               title="Cancel"

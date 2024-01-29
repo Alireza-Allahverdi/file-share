@@ -1,4 +1,3 @@
-import { Fragment, useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -6,20 +5,21 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import ButtonC from "../../../components/button/ButtonC";
-import { PiPlusBold } from "react-icons/pi";
-import { FaRegUser } from "react-icons/fa6";
-import ModalC from "../../../components/modal/ModalC";
-import SwitchC from "../../../components/switch/SwitchC";
-import PaginationC from "../../../components/pagination/PaginationC";
-import Input from "../../../components/input/Input";
+import CryptoJS from "crypto-js";
 import { Formik } from "formik";
+import { Fragment, useEffect, useState } from "react";
+import { FaRegUser } from "react-icons/fa6";
+import { PiPlusBold } from "react-icons/pi";
 import {
   addNewUser,
   chnageREstrictaion,
   getUsers,
 } from "../../../actions/apiActions";
-import CryptoJS from "crypto-js";
+import ButtonC from "../../../components/button/ButtonC";
+import Input from "../../../components/input/Input";
+import ModalC from "../../../components/modal/ModalC";
+import PaginationC from "../../../components/pagination/PaginationC";
+import SwitchC from "../../../components/switch/SwitchC";
 
 type registerTypes = {
   userName: string;
@@ -90,9 +90,9 @@ function Users() {
   };
 
   const handleRegisterUser = (values: registerTypes) => {
-    const hashPass = CryptoJS.SHA512(values.password).toString(
-      CryptoJS.enc.Hex
-    );
+    const hashPass = CryptoJS.SHA512(values.password)
+      .toString(CryptoJS.enc.Hex)
+      .toUpperCase();
     addNewUser({
       emailAddress: values.email,
       firstName: values.firstName,
