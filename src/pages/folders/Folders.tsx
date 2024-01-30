@@ -49,6 +49,7 @@ import {
   getPath,
   getRootFolder,
   moveFile,
+  uploadFile,
 } from "../../actions/apiActions";
 import ButtonC from "../../components/button/ButtonC";
 import IconButtonC from "../../components/iconButton/IconButtonC";
@@ -56,7 +57,7 @@ import Input from "../../components/input/Input";
 import ModalC from "../../components/modal/ModalC";
 import PaginationC from "../../components/pagination/PaginationC";
 import { toast } from "react-toastify";
-import { decrypt } from "../../utils/functions";
+import { decrypt, splitFilename } from "../../utils/functions";
 import CryptoJS from "crypto-js";
 
 export type folderContentTypes = {
@@ -138,8 +139,8 @@ const Folders = () => {
   const [moveFileModal, setMoveFileModal] = useState<boolean>(false);
   const [selectedFolderData, setSelectedFolderData] = useState([]);
   const [selectedFileInfo, setSelectedFileInfo] = useState({});
-  const [selectedFilePath, setSelectedFilePath] = useState("");
-  const [newFolderId, setNewFolderId] = useState("");
+  const [selectedFilePath, setSelectedFilePath] = useState<string>("");
+  const [newFolderId, setNewFolderId] = useState<string>("");
   // delete file
   const [deleteModal, setDeleteModal] = useState<boolean>(false);
   const [selectedObject, setSelectedObject] = useState<{
@@ -147,6 +148,12 @@ const Folders = () => {
     type: string;
   }>();
   const [currentFolde, setCurrentFolder] = useState({});
+  // share file
+  const [confirmShare, setConfirmShare] = useState<boolean>(false);
+  const [shareOptionsModal, setShareOptionsModal] = useState<boolean>(false);
+  const [sharedLink, setSharedLink] = useState<string>("");
+  const [emaiOruser, setEmailorUser] = useState<string>("");
+  const [customLink, setCustomLinks] = useState<boolean>(false);
 
   const handleClickOption = (e: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(e.currentTarget);
@@ -186,16 +193,6 @@ const Folders = () => {
       uInt8Array[index++] = word & 0xff;
     }
     return uInt8Array;
-  };
-
-  const fetchCredentials = () => {
-    getCredentials()
-      .then((res) => {
-        console.log(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
   };
 
   const fetchCurrentFolder = () => {
@@ -311,7 +308,6 @@ const Folders = () => {
     if (selectedObject.type === "Folder") {
       deleteFolder(selectedObject.id)
         .then((res) => {
-          fetchFolderContent(page, rowsPerPage);
           // todo toast success delete
         })
         .catch((err) => {
@@ -320,7 +316,6 @@ const Folders = () => {
     } else {
       deleteFiles(selectedObject.id)
         .then((res) => {
-          fetchFolderContent(page, rowsPerPage);
           // todo toast success delete
         })
         .catch((err) => [
@@ -371,17 +366,17 @@ const Folders = () => {
   };
 
   const decryptFile = (input: any, key: string, fileName: string) => {
-    var file = input;
-    var reader = new FileReader();
+    let file = input;
+    let reader = new FileReader();
     reader.onload = () => {
-      var decrypted = CryptoJS.AES.decrypt(reader.result, key); // Decryption: I: Base64 encoded string (OpenSSL-format) -> O: WordArray
-      var typedArray = convertWordArrayToUint8Array(decrypted); // Convert: WordArray -> typed array
+      let decrypted = CryptoJS.AES.decrypt(reader.result, key); // Decryption: I: Base64 encoded string (OpenSSL-format) -> O: WordArray
+      let typedArray = convertWordArrayToUint8Array(decrypted); // Convert: WordArray -> typed array
 
-      var fileDec = new Blob([typedArray]); // Create blob from typed array
-      var a = document.createElement("a");
-      var url = window.URL.createObjectURL(fileDec);
+      let fileDec = new Blob([typedArray]); // Create blob from typed array
+      let a = document.createElement("a");
+      let url = window.URL.createObjectURL(fileDec);
       // var filename = file.name.substr(0, file.name.length - 4) + ".dec";
-      var filename = fileName;
+      let filename = fileName;
       a.href = url;
       a.download = filename;
       a.click();
@@ -426,6 +421,55 @@ const Folders = () => {
     );
   };
 
+  const downloadAndDecrypt = () => {
+    const shaPass = localStorage.getItem("shaPass");
+    downloadItem(selectedObject.id).then((res) => {
+      console.log(res.data);
+      fetch(res.data.url)
+        .then((response2) => response2.blob()) // Gets the response and returns it as a blob
+        .then((blob) => {
+          console.log(blob);
+          getCredentials().then((response) => {
+            const descryptKey = decrypt(
+              response.data.key,
+              shaPass,
+              response.data.iv
+            );
+            let file = blob;
+            let reader = new FileReader();
+            reader.onload = () => {
+              let decrypted = CryptoJS.AES.decrypt(reader.result, descryptKey); // Decryption: I: Base64 encoded string (OpenSSL-format) -> O: WordArray
+              let typedArray = convertWordArrayToUint8Array(decrypted); // Convert: WordArray -> typed array
+
+              let fileDec = new Blob([typedArray]); // Create blob from typed array
+              let filenameAndExtenstion = splitFilename(res.data.filename);
+              console.log(filenameAndExtenstion);
+              uploadFile({
+                name: filenameAndExtenstion[0],
+                Extension: filenameAndExtenstion[1],
+                file: fileDec,
+                isEncypted: false,
+                parentId: id,
+              }).then((uploadRes) => {
+                handleDelete();
+                setConfirmShare(false);
+                setShareOptionsModal(true);
+                downloadItem(selectedObject.id).then((downloadRes) => {
+                  setSharedLink(res.data.url);
+                });
+              });
+              let url = window.URL.createObjectURL(fileDec);
+              // var filename = file.name.substr(0, file.name.length - 4) + ".dec";
+              window.URL.revokeObjectURL(url);
+            };
+            reader.readAsText(file);
+          });
+        });
+    });
+  };
+
+  // const
+
   useEffect(() => {
     fetchFolderPath();
     fetchFolderContent(1, 10);
@@ -468,6 +512,71 @@ const Folders = () => {
                 title="Save"
                 type="contained"
                 onCLick={handleCreatingFolder}
+              />
+            </div>
+          </div>
+        </ModalC>
+        <ModalC
+          title="Are you sure?"
+          open={confirmShare}
+          handleClose={() => setConfirmShare(false)}
+        >
+          <div className="flex flex-col gap-y-6">
+            <span className="text-[1em] text-on-surface dark:text-on-surface-dark">
+              By sharing, you will remove the encryption from this file and the
+              content of it will be visible publicly.
+            </span>
+            <div className="flex justify-end gap-x-2">
+              <ButtonC
+                title="Cancel"
+                type="outlined"
+                onCLick={() => setConfirmShare(false)}
+              />
+              <ButtonC
+                title="Share"
+                type="contained"
+                onCLick={downloadAndDecrypt}
+              />
+            </div>
+          </div>
+        </ModalC>
+        <ModalC
+          title="Share"
+          open={shareOptionsModal}
+          handleClose={() => setShareOptionsModal(false)}
+        >
+          <div className="flex flex-col gap-y-6">
+            <span className="text-[0.9em] text-on-surface dark:text-on-surface-dark">
+              Sharing link has been generated. You can share this file using the
+              following link:
+            </span>
+            <span className="text-[0.9em] text-on-surface dark:text-on-surface-dark underline">
+              {sharedLink.slice(0, 40)}...
+            </span>
+            <span className="text-[0.9em] text-on-surface dark:text-on-surface-dark">
+              OR you can share this file with others directly using their email
+              or username:
+            </span>
+            <div>
+              <Input
+                value={emaiOruser}
+                type="text"
+                label="Email Or User Name"
+                onChange={(e) => setEmailorUser(e.target.value)}
+              />
+            </div>
+            <div className="flex justify-end gap-x-2">
+              <ButtonC
+                title="Cancel"
+                type="outlined"
+                onCLick={() => setShareOptionsModal(false)}
+              />
+              <ButtonC
+                title="Share"
+                type="contained"
+                onCLick={() => {
+                  setCustomLinkModal(true);
+                }}
               />
             </div>
           </div>
@@ -677,7 +786,14 @@ const Folders = () => {
                               <span>Add to favorite</span>
                             </div>
                           </MenuItem>
-                          <MenuItem>
+                          <MenuItem
+                            onClick={() => {
+                              if (!item.isShared) {
+                                setConfirmShare(true);
+                              } else {
+                              }
+                            }}
+                          >
                             <div className="flex items-center gap-x-3">
                               <MdOutlineShare size={20} />
                               <span>Share</span>
