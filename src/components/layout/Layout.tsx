@@ -111,6 +111,8 @@ const Layout = () => {
           parentId: id,
         }).then((uploadRes) => {
           console.log(uploadRes);
+          setUploadModalState(false)
+          window.location.reload()
         });
       });
     };
@@ -225,7 +227,7 @@ const Layout = () => {
               type="outlined"
               onCLick={() => setUploadModalState(false)}
             />
-            <ButtonC title="Save" type="contained" onCLick={() => {}} />
+            {/* <ButtonC title="Save" type="contained" onCLick={() => {}} /> */}
           </div>
         </div>
       </ModalC>

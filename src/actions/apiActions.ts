@@ -204,16 +204,22 @@ export const uploadFile = async (data: {
   formData.append("Extension", data.Extension);
   formData.append("IsEncrypted", data.isEncypted);
   formData.append("File", data.file);
-  const res = await axios.post(apiRoutes.items.uploadFiles, formData);
+  const res = await axios.post(apiRoutes.items.uploadFiles, formData, {
+    headers: {
+      "Content-Type": "multipart/formdata"
+    }
+  });
   return res;
 };
 
 export const deleteFiles = async (id: string) => {
   const res = await axios.delete(apiRoutes.items.deleteFile(id));
+  return res
 };
 
 export const deletFolder = async (id: string) => {
   const res = await axios.delete(apiRoutes.items.deleteFolder(id));
+  return res
 };
 
 export const getShared = async (data: { page: number; perPage: number }) => {
