@@ -16,7 +16,6 @@ import { folderContentTypes } from "../folders/Folders";
 import { getFavorites } from "../../actions/apiActions";
 
 function Favorite() {
-
   const BILION = 1_000_000_000;
   const MILION = 1_000_000;
   const THOUSAND = 1_000;
@@ -105,10 +104,10 @@ function Favorite() {
                       : item.size > BILION
                       ? `${(item.size / BILION).toFixed(1)} GB`
                       : item.size > MILION
-                      ? `${(item.size / BILION).toFixed(1)} MB`
+                      ? `${(item.size / MILION).toFixed(1)} MB`
                       : item.size > THOUSAND
-                      ? `${(item.size / BILION).toFixed(1)} KB`
-                      : `${(item.size).toFixed(1)} B`}
+                      ? `${(item.size / THOUSAND).toFixed(1)} KB`
+                      : `${item.size.toFixed(1)} B`}
                   </TableCell>
                 </TableRow>
               ))}
