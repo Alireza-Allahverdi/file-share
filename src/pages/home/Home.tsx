@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { getRootFolder } from "../../actions/apiActions";
 
 const Home = () => {
@@ -8,11 +9,11 @@ const Home = () => {
   useEffect(() => {
     getRootFolder()
       .then((res) => {
-        navigate(`/folders/${res.data}`)
+        navigate(`/folders/${res.data}`);
         console.log(res);
       })
       .catch((err) => {
-        // todo toast sth wrong
+        toast.error(err.response.data);
       });
   }, []);
 

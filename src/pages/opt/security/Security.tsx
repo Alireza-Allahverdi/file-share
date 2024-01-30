@@ -5,6 +5,7 @@ import {
   MdOutlineContentCopy,
   MdOutlineSave,
 } from "react-icons/md";
+import { toast } from "react-toastify";
 import {
   changePassword,
   getCredentials,
@@ -48,16 +49,17 @@ function Security() {
               sendKey(encryptKey).then(() => {
                 localStorage.setItem("shaPass", newPassSha512);
                 setChangePasswordModal(false);
-                // todo toast new pass change success
+
+                toast.success("Password changed successfully");
               });
             })
             .catch((error) => {
-              // todo toast error
+              toast.error(error.response.data);
             });
         }
       })
       .catch((err) => {
-        // todo toast
+        toast.error(err.response.data);
       });
   };
 
@@ -71,7 +73,7 @@ function Security() {
         }
       })
       .catch((err) => {
-        // todo toast
+        toast.error(err.response.data);
       });
   }, []);
 
@@ -164,7 +166,8 @@ function Security() {
               icon={<MdOutlineContentCopy size={18} />}
               onCLick={() => {
                 navigator.clipboard.writeText(secretKey);
-                // todo toast
+
+                toast.info("Copied to clipboard");
               }}
             />
           </div>
