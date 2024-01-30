@@ -1,7 +1,3 @@
-import { useEffect, useState } from "react";
-import ButtonC from "../../components/button/ButtonC";
-import ModalC from "../../components/modal/ModalC";
-import Input from "../../components/input/Input";
 import {
   IconButton,
   Menu,
@@ -14,10 +10,10 @@ import {
   ThemeProvider,
   createTheme,
 } from "@mui/material";
-import PaginationC from "../../components/pagination/PaginationC";
-import { PiPlus, PiPlusBold } from "react-icons/pi";
+import { useEffect, useState } from "react";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { GoArrowLeft } from "react-icons/go";
 import {
-  MdEdit,
   MdOutlineDeleteOutline,
   MdOutlineDriveFileMove,
   MdOutlineEdit,
@@ -30,22 +26,22 @@ import {
   MdOutlineStarOutline,
   MdOutlineStarPurple500,
 } from "react-icons/md";
+import { PiPlus, PiPlusBold } from "react-icons/pi";
+import { RxCross2 } from "react-icons/rx";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   createNewFolder,
   editFileInfo,
-  fetchAccount,
   getCredentials,
   getFileInfo,
   getFolderContent,
   getPath,
-  logOut,
 } from "../../actions/apiActions";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { GoArrowLeft } from "react-icons/go";
-import { BsThreeDotsVertical } from "react-icons/bs";
+import ButtonC from "../../components/button/ButtonC";
 import IconButtonC from "../../components/iconButton/IconButtonC";
-import { FaCross } from "react-icons/fa6";
-import { RxCross2 } from "react-icons/rx";
+import Input from "../../components/input/Input";
+import ModalC from "../../components/modal/ModalC";
+import PaginationC from "../../components/pagination/PaginationC";
 
 export type folderContentTypes = {
   creationDate: string;
@@ -113,6 +109,10 @@ const Folders = () => {
   const [moveFileModal, setMoveFileModal] = useState<boolean>(false);
   // delete file
   const [deleteModal, setDeleteModal] = useState<boolean>(false);
+  const [selectedObject, setSelectedObject] = useState<{
+    id: string;
+    type: string;
+  }>();
 
   const handleClickOption = (e: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(e.currentTarget);
@@ -181,6 +181,11 @@ const Folders = () => {
     }
   };
 
+  const handleDelete = () => {
+    console.log(selectedObject);
+    setDeleteModal(false);
+  };
+
   const fetchFileInfo = (id: string, isFolder: boolean) => {
     getFileInfo(id, isFolder).then((res) => {
       setSelectedFileContent(res.data);
@@ -194,12 +199,12 @@ const Folders = () => {
         name: newName,
         description: newDescryption,
         tags: newTags,
-        isFolder: selectedFileContent?.itemType === "Folder"
+        isFolder: selectedFileContent?.itemType === "Folder",
       })
         .then((res) => {
           // todo toast success edit
-          setEditInfoModal(false)
-          navigate(-1)
+          setEditInfoModal(false);
+          navigate(-1);
         })
         .catch(() => {
           // todo toast sth wrong
@@ -303,7 +308,11 @@ const Folders = () => {
                           item.itemType === "Folder" ? true : false
                         );
                       }}
-                      onDoubleClick={() => navigate(`/folders/${item.id}`)}
+                      onDoubleClick={() =>
+                        item.itemType === "Folder"
+                          ? navigate(`/folders/${item.id}`)
+                          : () => {}
+                      }
                     >
                       <div className="flex items-center gap-x-3">
                         {item.itemType === "Folder" ? (
@@ -339,9 +348,9 @@ const Folders = () => {
                         : item.size > BILION
                         ? `${(item.size / BILION).toFixed(1)} GB`
                         : item.size > MILION
-                        ? `${(item.size / BILION).toFixed(1)} MB`
+                        ? `${(item.size / MILION).toFixed(1)} MB`
                         : item.size > THOUSAND
-                        ? `${(item.size / BILION).toFixed(1)} KB`
+                        ? `${(item.size / THOUSAND).toFixed(1)} KB`
                         : `${item.size.toFixed(1)} B`}
                     </TableCell>
                     <TableCell className="text-on-surface dark:text-on-surface-dark">
@@ -400,6 +409,11 @@ const Folders = () => {
                             onClick={() => {
                               setAnchorEl(null);
                               setDeleteModal(true);
+
+                              setSelectedObject({
+                                id: item.id,
+                                type: item.itemType,
+                              });
                             }}
                           >
                             <div className="flex items-center gap-x-3">
@@ -521,22 +535,13 @@ const Folders = () => {
           handleClose={() => setDeleteModal(false)}
         >
           <div className="flex flex-col gap-y-6">
-            <span className="text-on-surface dark:text-on-surface-dark">
-              Are you sure
-            </span>
             <div className="flex justify-end gap-x-2">
               <ButtonC
                 title="Cancel"
                 type="outlined"
                 onCLick={() => setDeleteModal(false)}
               />
-              <ButtonC
-                title="Delete"
-                type="contained"
-                onCLick={() => {
-                  // delete file
-                }}
-              />
+              <ButtonC title="Delete" type="contained" onCLick={handleDelete} />
             </div>
           </div>
         </ModalC>
@@ -588,9 +593,9 @@ const Folders = () => {
                   : selectedFileContent?.size > BILION
                   ? `${(selectedFileContent?.size / BILION)?.toFixed(1)} GB`
                   : selectedFileContent?.size > MILION
-                  ? `${(selectedFileContent?.size / BILION)?.toFixed(1)} MB`
+                  ? `${(selectedFileContent?.size / MILION)?.toFixed(1)} MB`
                   : selectedFileContent?.size > THOUSAND
-                  ? `${(selectedFileContent?.size / BILION)?.toFixed(1)} KB`
+                  ? `${(selectedFileContent?.size / THOUSAND)?.toFixed(1)} KB`
                   : `${selectedFileContent?.size?.toFixed(1)} B`}
               </span>
             </div>
@@ -654,8 +659,8 @@ const Folders = () => {
             <IconButtonC
               icon={<PiPlus />}
               onClick={() => {
-                setNewTags([...newTags, tagText])
-                setTagText("")
+                setNewTags([...newTags, tagText]);
+                setTagText("");
               }}
             />
           </div>
