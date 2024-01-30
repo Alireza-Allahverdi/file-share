@@ -15,7 +15,7 @@ import {
   createTheme,
 } from "@mui/material";
 import PaginationC from "../../components/pagination/PaginationC";
-import { PiPlusBold } from "react-icons/pi";
+import { PiPlus, PiPlusBold } from "react-icons/pi";
 import {
   MdEdit,
   MdOutlineDeleteOutline,
@@ -32,6 +32,7 @@ import {
 } from "react-icons/md";
 import {
   createNewFolder,
+  editFileInfo,
   fetchAccount,
   getCredentials,
   getFileInfo,
@@ -43,6 +44,8 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { GoArrowLeft } from "react-icons/go";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import IconButtonC from "../../components/iconButton/IconButtonC";
+import { FaCross } from "react-icons/fa6";
+import { RxCross2 } from "react-icons/rx";
 
 export type folderContentTypes = {
   creationDate: string;
@@ -92,6 +95,11 @@ const Folders = () => {
   const [folderContent, setFolderContent] = useState<folderContentTypes>([]);
   // selected file content
   const [selectedFileContent, setSelectedFileContent] = useState({});
+  const [editInfoModal, setEditInfoModal] = useState<boolean>(false);
+  const [newDescryption, setNewDescryption] = useState<string>("");
+  const [newName, setNewName] = useState<string>("");
+  const [tagText, setTagText] = useState<string>("");
+  const [newTags, setNewTags] = useState<string[]>([]);
   // new folder
   const [newFolderName, setNewFolderName] = useState<string>("");
   const [newFolderModal, setNewFolderModal] = useState<boolean>(false);
@@ -177,6 +185,26 @@ const Folders = () => {
     getFileInfo(id, isFolder).then((res) => {
       setSelectedFileContent(res.data);
     });
+  };
+
+  const handleEditFileInfo = () => {
+    if (searchParams.get("searchId")) {
+      editFileInfo({
+        id: searchParams.get("searchId"),
+        name: newName,
+        description: newDescryption,
+        tags: newTags,
+        isFolder: selectedFileContent?.itemType === "Folder"
+      })
+        .then((res) => {
+          // todo toast success edit
+          setEditInfoModal(false)
+          navigate(-1)
+        })
+        .catch(() => {
+          // todo toast sth wrong
+        });
+    }
   };
 
   useEffect(() => {
@@ -314,7 +342,7 @@ const Folders = () => {
                         ? `${(item.size / BILION).toFixed(1)} MB`
                         : item.size > THOUSAND
                         ? `${(item.size / BILION).toFixed(1)} KB`
-                        : `${(item.size).toFixed(1)} B`}
+                        : `${item.size.toFixed(1)} B`}
                     </TableCell>
                     <TableCell className="text-on-surface dark:text-on-surface-dark">
                       <IconButton
@@ -514,36 +542,35 @@ const Folders = () => {
         </ModalC>
       </div>
       {!!searchParams.get("searchId") ? (
-        <div className="w-1/4 bg-on-primary dark:bg-on-primary-dark rounded-2xl py-6 px-14 shadow-[#0000004D] shadow-sm">
+        <div className="w-[28%] bg-on-primary dark:bg-on-primary-dark rounded-2xl py-6 px-14 shadow-[#0000004D] shadow-sm">
           <div className="flex justify-between py-4 border-b border-b-on-surface dark:border-b-on-surface-dark">
             <span className="text-[1.4em] text-on-surface dark:text-on-surface-dark">
               {selectedFileContent?.name}
             </span>
             <IconButtonC
               icon={<MdOutlineEdit size={24} />}
-              onClick={() => {}}
+              onClick={() => setEditInfoModal(true)}
             />
           </div>
-          <div className="flex flex-col gap-y-3 py-6">
+          <div className="flex flex-col gap-y-3 py-6 border-b border-b-on-surface dark:border-b-on-surface-dark">
             <div className="flex justify-between">
               <span className="w-1/3 text-on-surface dark:text-on-surface-dark text-[1.2em] font-semibold">
                 Info
               </span>
             </div>
             <div className="flex justify-between">
-            <span className="w-2/5 text-on-surface dark:text-on-surface-dark text-[1em]">
+              <span className="w-2/5 text-on-surface dark:text-on-surface-dark text-[1em]">
                 Description
               </span>
-              <span className="w-2/3 text-on-surface dark:text-on-surface-dark text-[1em]">
+              <span className="w-1/2 text-on-surface dark:text-on-surface-dark text-[1em]">
                 {selectedFileContent?.description}
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Modi, eos sapiente exercitationem deserunt, iusto delectus cum unde incidunt earum animi culpa laborum beatae perspiciatis corrupti fuga deleniti tempora sequi quis?
               </span>
             </div>
             <div className="flex justify-between">
-            <span className="w-2/5 text-on-surface dark:text-on-surface-dark text-[1em]">
+              <span className="w-2/5 text-on-surface dark:text-on-surface-dark text-[1em]">
                 Tags
               </span>
-              <div className="w-2/3 flex flex-wrap gap-x-1">
+              <div className="w-1/2 flex flex-wrap gap-x-1">
                 {selectedFileContent?.tags?.map((item) => (
                   <div className="py-1 px-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant-dark border border-outline dark:border-outline-dark">
                     {item}
@@ -552,10 +579,10 @@ const Folders = () => {
               </div>
             </div>
             <div className="flex justify-between">
-            <span className="w-2/5 text-on-surface dark:text-on-surface-dark text-[1em]">
+              <span className="w-2/5 text-on-surface dark:text-on-surface-dark text-[1em]">
                 File Size
               </span>
-              <span className="w-2/3 text-on-surface dark:text-on-surface-dark text-[1em]">
+              <span className="w-1/2 text-on-surface dark:text-on-surface-dark text-[1em]">
                 {selectedFileContent?.itemType === "Folder"
                   ? null
                   : selectedFileContent?.size > BILION
@@ -564,20 +591,103 @@ const Folders = () => {
                   ? `${(selectedFileContent?.size / BILION)?.toFixed(1)} MB`
                   : selectedFileContent?.size > THOUSAND
                   ? `${(selectedFileContent?.size / BILION)?.toFixed(1)} KB`
-                  : `${(selectedFileContent?.size)?.toFixed(1)} B`}
+                  : `${selectedFileContent?.size?.toFixed(1)} B`}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="w-2/5 text-on-surface dark:text-on-surface-dark text-[1em]">
                 Sharing Status
               </span>
-              <span className="w-2/5 text-on-surface dark:text-on-surface-dark text-[1em]">
+              <span className="w-1/2 text-on-surface dark:text-on-surface-dark text-[1em]">
                 {selectedFileContent?.isShared ? "Public" : "Private"}
               </span>
             </div>
           </div>
+          <div className="flex flex-col gap-y-3 py-6">
+            <span className="w-1/3 text-on-surface dark:text-on-surface-dark text-[1.2em] font-semibold">
+              Activity
+            </span>
+            <div className="flex flex-col gap-y-2">
+              {selectedFileContent?.activitis?.map((item) => (
+                <div className="flex flex-col gap-y-1">
+                  <span className="text-on-surface dark:text-on-surface-dark text-[0.8em]">
+                    {item?.operation}
+                  </span>
+                  <span className="text-on-surface-variant dark:text-on-surface-variant-dark text-[0.7em]">
+                    {item?.data.slice(0, 10)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       ) : null}
+      <ModalC
+        open={editInfoModal}
+        title="Edit"
+        handleClose={() => setEditInfoModal(false)}
+      >
+        <div className="flex flex-col gap-y-6">
+          <Input
+            label="File Name"
+            type="text"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+          />
+          <textarea
+            placeholder="Descryption"
+            className="w-full border border-[#bdbdbd] p-3 text-on-surface dark:text-on-surface-dark rounded-md bg-transparent resize-none"
+            value={newDescryption}
+            rows={10}
+            onChange={(e) => setNewDescryption(e.target.value)}
+          ></textarea>
+          <div className="flex items-center justify-between">
+            <Input
+              className="w-3/4"
+              label="New Tag"
+              type="text"
+              value={tagText}
+              onChange={(e) => {
+                setTagText(e.target.value);
+              }}
+            />
+            <IconButtonC
+              icon={<PiPlus />}
+              onClick={() => {
+                setNewTags([...newTags, tagText])
+                setTagText("")
+              }}
+            />
+          </div>
+          <div className="flex flex-wrap gap-1">
+            {newTags.map((tag, index: number) => (
+              <div className="flex items-center justify-between py-1 px-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant-dark border border-outline dark:border-outline-dark">
+                {tag}
+                <RxCross2
+                  className="ml-1 cursor-pointer"
+                  onClick={() => {
+                    let newArray = [...newTags];
+                    newArray.splice(index, 1);
+                    setNewTags(newArray);
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-end gap-x-2">
+            <ButtonC
+              title="Cancel"
+              type="outlined"
+              onCLick={() => setEditInfoModal(false)}
+            />
+            <ButtonC
+              title="Save"
+              type="contained"
+              onCLick={handleEditFileInfo}
+            />
+          </div>
+        </div>
+      </ModalC>
     </div>
   );
 };

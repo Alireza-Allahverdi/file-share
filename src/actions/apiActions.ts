@@ -171,3 +171,18 @@ export const getFileInfo = async (id: string,isFolder: boolean) => {
   });
   return res;
 };
+
+export const editFileInfo  = async (data: {
+  id: string,
+  name: string,
+  tags: string[],
+  description: string,
+  isFolder: boolean
+}) => {
+  const res = await axios.put(apiRoutes.items.itemsInfo(data.id), {
+    name: data.name,
+    tags: data.tags,
+    description: data.description
+  }, {params: {isFolder: data.isFolder}});
+  return res;
+}
