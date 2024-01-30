@@ -208,12 +208,17 @@ export const uploadFile = async (data: {
   return res;
 };
 
-
 export const deleteFiles = async (id: string) => {
-  const res = await axios.delete(apiRoutes.items.deleteFile(id))
-}
+  const res = await axios.delete(apiRoutes.items.deleteFile(id));
+};
 
 export const deletFolder = async (id: string) => {
-  const res = await axios.delete(apiRoutes.items.deleteFolder(id))
+  const res = await axios.delete(apiRoutes.items.deleteFolder(id));
+};
 
-}
+export const getShared = async (data: { page: number; perPage: number }) => {
+  const res = await axios.get(apiRoutes.items.shared, {
+    params: data,
+  });
+  return res;
+};
