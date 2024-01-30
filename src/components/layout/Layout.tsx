@@ -39,7 +39,7 @@ import {
   uploadFile,
 } from "../../actions/apiActions";
 import CryptoJS from "crypto-js";
-import { decrypt } from "../../utils/functions";
+import { decrypt, splitFilename } from "../../utils/functions";
 
 const Layout = () => {
   const location = useLocation();
@@ -104,9 +104,9 @@ const Layout = () => {
 
         window.URL.revokeObjectURL(url);
         uploadFile({
-          name: file.name,
+          name: splitFilename(file.name)[0],
           file: fileEnc,
-          Extension: file.type,
+          Extension: splitFilename(file.name)[1],
           isEncypted: true,
           parentId: id,
         }).then((uploadRes) => {

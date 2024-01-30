@@ -29,3 +29,11 @@ export const decrypt = (msg: string, key: string, iv: string) => {
   });
   return decrypted.toString(CryptoJS.enc.Utf8);
 };
+
+export const splitFilename = (filename:string) => {
+  const index = filename.lastIndexOf(".");
+  const file = filename.substring(0,index);
+  const extension = filename.substring(index+1);
+
+  return [file,extension]
+}
