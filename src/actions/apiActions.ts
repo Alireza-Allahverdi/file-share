@@ -199,11 +199,20 @@ export const uploadFile = async (data: {
   file: any;
 }) => {
   const formData = new FormData();
-formData.append("Name", data.name)
-formData.append("ParentId", data.parentId)
-formData.append("Extension", data.Extension)
-formData.append("IsEncrypted", data.isEncypted)
-formData.append("File", data.file)
+  formData.append("Name", data.name);
+  formData.append("ParentId", data.parentId);
+  formData.append("Extension", data.Extension);
+  formData.append("IsEncrypted", data.isEncypted);
+  formData.append("File", data.file);
   const res = await axios.post(apiRoutes.items.uploadFiles, formData);
   return res;
 };
+
+
+export const deleteFiles = async (id: string) => {
+  const res = await axios.delete(apiRoutes.items.deleteFile(id))
+}
+
+export const deletFolder = async () => {
+
+}

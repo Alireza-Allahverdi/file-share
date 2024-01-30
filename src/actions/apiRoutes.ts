@@ -32,5 +32,7 @@ export const apiRoutes = {
     fileMove: (id: string) => `/files/${id}/move`,
     shareUser: "/files/{id}/share/user",
     shareCustom: "/files/{id}/share/custom",
+    deleteFile: (id: string) => `/files/${id}`,
+    deleteFolder: (id: string) => `/folders/${id}`
   },
 };

@@ -1,4 +1,10 @@
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import {
+  Link,
+  Outlet,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import IconButtonC from "../iconButton/IconButtonC";
 import MenuItemC from "../menuItem/MenuItemC";
 import ButtonC from "../button/ButtonC";
@@ -27,9 +33,13 @@ import {
 import { FaGithub } from "react-icons/fa6";
 import {
   fetchAccount,
+  getCredentials,
   getUserStorageUsage,
   logOut,
+  uploadFile,
 } from "../../actions/apiActions";
+import CryptoJS from "crypto-js";
+import { decrypt } from "../../utils/functions";
 
 const Layout = () => {
   const location = useLocation();
@@ -59,12 +69,53 @@ const Layout = () => {
     },
   });
 
+  const { id } = useParams();
+
   const [aboutModalState, setAboutModalState] = useState<boolean>(false);
   const [uploadModalState, setUploadModalState] = useState<boolean>(false);
   const [storage, setStorage] = useState<{ total: number; usage: number }>({
     total: 0,
     usage: 0,
   });
+
+  const handleUploadFile = (input: React.ChangeEvent<HTMLInputElement>) => {
+    let file = input[0];
+    let reader = new FileReader();
+    reader.onload = () => {
+      getCredentials().then((res) => {
+        let shaPass = localStorage.getItem("shaPass");
+        let decryptedKey = decrypt(res.data.key, shaPass, res.data.iv);
+        let wordArray = CryptoJS.lib.WordArray.create(reader.result); // Convert: ArrayBuffer -> WordArray
+        let encrypted = CryptoJS.AES.encrypt(
+          wordArray,
+          decryptedKey
+        ).toString(); // Encryption: I: WordArray -> O: -> Base64 encoded string (OpenSSL-format)
+
+        let fileEnc = new Blob([encrypted]); // Create blob from string
+        // let a = document.createElement("a");
+        console.log(fileEnc);
+        
+        let url = window.URL.createObjectURL(fileEnc);
+        // let filename = file.name + ".enc";
+        // a.href = url;
+        // a.download = filename;
+        // a.click();
+        // console.log(url);
+
+        window.URL.revokeObjectURL(url);
+        uploadFile({
+          name: file.name,
+          file: fileEnc,
+          Extension: file.type,
+          isEncypted: true,
+          parentId: id,
+        }).then((uploadRes) => {
+          console.log(uploadRes);
+        });
+      });
+    };
+    reader.readAsArrayBuffer(file);
+  };
 
   useEffect(() => {
     fetchAccount()
@@ -126,7 +177,9 @@ const Layout = () => {
             </Link>
           ))}
           <div className="mt-auto">
-            <p className="border-on-surface-variant dark:border-on-surface-variant-dark">Storage</p>
+            <p className="border-on-surface-variant dark:border-on-surface-variant-dark">
+              Storage
+            </p>
             <div className="w-full h-3 p-[1px] rounded-[11px] border border-on-surface-variant dark:border-on-surface-variant-dark my-2">
               <div
                 className={
@@ -152,7 +205,7 @@ const Layout = () => {
         handleClose={() => setUploadModalState(false)}
       >
         <div className="flex flex-col gap-y-6">
-          <Dropzone onDrop={(acceptedFiles) => console.log(acceptedFiles)}>
+          <Dropzone onDrop={(acceptedFiles) => handleUploadFile(acceptedFiles)}>
             {({ getRootProps, getInputProps }) => (
               <section className="h-[100px] text-on-surface-variant dark:bg-on-surface-variant-dark border border-outline dark:border-outline-dark rounded-sm cursor-pointer">
                 <div
