@@ -68,7 +68,7 @@ function ServerSetting() {
 
   const updateRegisteration = () => {
     changeRegisteration(!registeration)
-      .then((res) => {
+      .then(() => {
         fetchRegisteration();
         setStatusModal(false);
         toast.success("User registered successfully");
@@ -150,8 +150,8 @@ function ServerSetting() {
                 type="text"
                 value={
                   !capacityEditMode
-                    ? `${!!userStorage ? userStorage : 0} GB`
-                    : !!userStorage
+                    ? `${userStorage ? userStorage : 0} GB`
+                    : userStorage
                     ? userStorage
                     : 0
                 }

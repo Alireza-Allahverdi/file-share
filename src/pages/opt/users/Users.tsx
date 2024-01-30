@@ -341,7 +341,7 @@ function Users() {
           itemsCount={totalData}
           page={page - 1}
           rowsPerPage={rowsPerPage}
-          onPageChange={(e, newPage) => {
+          onPageChange={(_, newPage) => {
             setPage(newPage);
             fetchUsers(newPage, rowsPerPage);
           }}

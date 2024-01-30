@@ -1,26 +1,4 @@
 import {
-  Link,
-  Outlet,
-  useLocation,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
-import IconButtonC from "../iconButton/IconButtonC";
-import MenuItemC from "../menuItem/MenuItemC";
-import ButtonC from "../button/ButtonC";
-import {
-  MdOutlineFileUpload,
-  MdOutlineHome,
-  MdOutlineInfo,
-  MdOutlinePeopleAlt,
-  MdOutlineSettings,
-  MdOutlineStarOutline,
-} from "react-icons/md";
-import { WebsiteIcon } from "../../assets";
-import { useEffect, useState } from "react";
-import ModalC from "../modal/ModalC";
-import Dropzone from "react-dropzone";
-import {
   Avatar,
   Divider,
   List,
@@ -30,7 +8,25 @@ import {
   ThemeProvider,
   createTheme,
 } from "@mui/material";
+import CryptoJS from "crypto-js";
+import { useEffect, useState } from "react";
+import Dropzone from "react-dropzone";
 import { FaGithub } from "react-icons/fa6";
+import {
+  MdOutlineFileUpload,
+  MdOutlineHome,
+  MdOutlineInfo,
+  MdOutlinePeopleAlt,
+  MdOutlineSettings,
+  MdOutlineStarOutline,
+} from "react-icons/md";
+import {
+  Link,
+  Outlet,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import {
   fetchAccount,
   getCredentials,
@@ -38,8 +34,12 @@ import {
   logOut,
   uploadFile,
 } from "../../actions/apiActions";
-import CryptoJS from "crypto-js";
+import { WebsiteIcon } from "../../assets";
 import { decrypt } from "../../utils/functions";
+import ButtonC from "../button/ButtonC";
+import IconButtonC from "../iconButton/IconButtonC";
+import MenuItemC from "../menuItem/MenuItemC";
+import ModalC from "../modal/ModalC";
 
 const Layout = () => {
   const location = useLocation();
@@ -79,23 +79,23 @@ const Layout = () => {
   });
 
   const handleUploadFile = (input: React.ChangeEvent<HTMLInputElement>) => {
-    let file = input[0];
-    let reader = new FileReader();
+    const file = input[0];
+    const reader = new FileReader();
     reader.onload = () => {
       getCredentials().then((res) => {
-        let shaPass = localStorage.getItem("shaPass");
-        let decryptedKey = decrypt(res.data.key, shaPass, res.data.iv);
-        let wordArray = CryptoJS.lib.WordArray.create(reader.result); // Convert: ArrayBuffer -> WordArray
-        let encrypted = CryptoJS.AES.encrypt(
+        const shaPass = localStorage.getItem("shaPass")!;
+        const decryptedKey = decrypt(res.data.key, shaPass, res.data.iv);
+        const wordArray = CryptoJS.lib.WordArray.create(reader.result); // Convert: ArrayBuffer -> WordArray
+        const encrypted = CryptoJS.AES.encrypt(
           wordArray,
           decryptedKey
         ).toString(); // Encryption: I: WordArray -> O: -> Base64 encoded string (OpenSSL-format)
 
-        let fileEnc = new Blob([encrypted]); // Create blob from string
+        const fileEnc = new Blob([encrypted]); // Create blob from string
         // let a = document.createElement("a");
         console.log(fileEnc);
-        
-        let url = window.URL.createObjectURL(fileEnc);
+
+        const url = window.URL.createObjectURL(fileEnc);
         // let filename = file.name + ".enc";
         // a.href = url;
         // a.download = filename;
@@ -108,7 +108,7 @@ const Layout = () => {
           file: fileEnc,
           Extension: file.type,
           isEncypted: true,
-          parentId: id,
+          parentId: id!,
         }).then((uploadRes) => {
           console.log(uploadRes);
         });
@@ -127,7 +127,7 @@ const Layout = () => {
           });
         });
       })
-      .catch((err) => {
+      .catch(() => {
         logOut().then(() => {
           navigate("/auth/signin");
         });
