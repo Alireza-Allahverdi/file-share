@@ -3,6 +3,7 @@ import { Formik } from "formik";
 import { Fragment } from "react";
 import { MdLogin, MdOutlineModeEdit } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { getCredentials, sendKey, signUp } from "../../../actions/apiActions";
 import ButtonC from "../../../components/button/ButtonC";
 import Input from "../../../components/input/Input";
@@ -88,13 +89,12 @@ function Signup() {
         //   let decrypted = decrypt(res.data.key, hash256Pass, res.data.iv);
         //   console.log(decrypted);
         // }
-        // TODO toast the successful signup
+        toast.success("Registration completed");
         localStorage.setItem("shaPass", hash256Pass);
         navigate("/");
       })
       .catch((err) => {
-        // TODO toast the problem with encryption
-        console.log(err);
+        toast.error(err.response.data);
       });
   };
 
@@ -115,8 +115,7 @@ function Signup() {
         }
       })
       .catch((err) => {
-        // TODO toast the unsuccessful signup
-        console.log(err);
+        toast.error(err.response.data);
       });
   };
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { GiCheckedShield } from "react-icons/gi";
 import { MdOutlineSave } from "react-icons/md";
+import { toast } from "react-toastify";
 import {
   changeRegisteration,
   getRegisteration,
@@ -47,11 +48,11 @@ function ServerSetting() {
 
   const changeUserStorage = () => {
     updateUserStorage(userStorage)
-      .then((res) => {
-        // TODO toast
+      .then(() => {
+        toast.success("Storage limit updated successfully");
       })
       .catch((err) => {
-        // TODO toast
+        toast.error(err.response.data);
       });
   };
 
@@ -70,10 +71,10 @@ function ServerSetting() {
       .then((res) => {
         fetchRegisteration();
         setStatusModal(false);
-        // todo toast
+        toast.success("User registered successfully");
       })
       .catch((err) => {
-        // todo toast
+        toast.error(err.response.data);
       });
   };
 
