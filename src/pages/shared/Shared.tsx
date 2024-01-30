@@ -5,16 +5,42 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import PaginationC from "../../components/pagination/PaginationC";
+import { useEffect, useState } from "react";
 import {
   MdOutlineFolder,
   MdOutlineKeyboardArrowDown,
-  MdOutlineStarOutline,
+  MdOutlineStarPurple500,
 } from "react-icons/md";
+import { getShared } from "../../actions/apiActions";
+import PaginationC from "../../components/pagination/PaginationC";
+import { folderContentTypes } from "../folders/Folders";
 
 function Shared() {
+  const BILION = 1_000_000_000;
+  const MILION = 1_000_000;
+  const THOUSAND = 1_000;
+
+  const [totalData, setTotalData] = useState<number>(0);
+  const [page, setPage] = useState<number>(1);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
+  const [sharedContent, setSharedContent] = useState<folderContentTypes>([]);
+
+  const fetchShared = (newPage: number, newRowsPerPage: number) => {
+    getShared({
+      page: newPage,
+      perPage: newRowsPerPage,
+    }).then((res) => {
+      setTotalData(res.data.itemsCount);
+      setSharedContent(res.data.data);
+    });
+  };
+
+  useEffect(() => {
+    fetchShared(1, 10);
+  }, []);
+
   return (
-    <div className="h-full bg-on-primary dark:bg-on-primary-dark rounded-2xl py-6 px-14 shadow-[#0000004D] shadow-sm">
+    <div>
       <div className="flex justify-between py-4 border-b border-b-on-surface dark:border-b-on-surface-dark">
         <span className="text-[1.4em] text-on-surface dark:text-on-surface-dark">
           Shared with me
@@ -45,40 +71,58 @@ function Shared() {
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableRow>
-              <TableCell component="th" scope="row">
-                <div className="flex items-center gap-x-3">
-                  <MdOutlineFolder
-                    size={24}
-                    className="text-on-surface dark:text-on-surface-dark"
-                  />
-                  <span className="text-on-surface dark:text-on-surface-dark">
-                    FOLDER NAME
-                  </span>
-                  <div className="py-1 px-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant-dark border border-outline dark:border-outline-dark">
-                    Shared
-                  </div>
-                  <MdOutlineStarOutline
-                    className="text-on-surface-variant"
-                    size={20}
-                  />
-                </div>
-              </TableCell>
-              <TableCell className="text-on-surface dark:text-on-surface-dark">
-                1402/10/11
-              </TableCell>
-              <TableCell className="text-on-surface dark:text-on-surface-dark">
-                500 MB
-              </TableCell>
-            </TableRow>
+            {sharedContent.length !== 0 &&
+              sharedContent.map((item) => (
+                <TableRow key={item.id}>
+                  <TableCell component="th" scope="row">
+                    <div className="flex items-center gap-x-3">
+                      {item.itemType === "Folder" ? (
+                        <MdOutlineFolder size={24} color={item.iconColor} />
+                      ) : null}
+                      <span className="text-on-surface dark:text-on-surface-dark">
+                        {item.name}
+                      </span>
+                      {item.itemType === "Folder" ? null : item.isShared ? (
+                        <div className="py-1 px-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant-dark border border-outline dark:border-outline-dark">
+                          Shared
+                        </div>
+                      ) : null}
+                      <MdOutlineStarPurple500
+                        className="text-on-surface-variant dark:text-on-surface-variant-dark"
+                        size={20}
+                      />
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-on-surface dark:text-on-surface-dark">
+                    {item.creationDate.slice(0, 10)}
+                  </TableCell>
+                  <TableCell className="text-on-surface dark:text-on-surface-dark">
+                    {item.itemType === "Folder"
+                      ? null
+                      : item.size > BILION
+                      ? `${(item.size / BILION).toFixed(1)} GB`
+                      : item.size > MILION
+                      ? `${(item.size / BILION).toFixed(1)} MB`
+                      : item.size > THOUSAND
+                      ? `${(item.size / BILION).toFixed(1)} KB`
+                      : `${item.size.toFixed(1)} B`}
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
         <PaginationC
-          itemsCount={100}
-          page={0}
-          rowsPerPage={10}
-          onPageChange={(e, newPage) => console.log(newPage)}
-          onRowsPerPageChange={(e) => console.log(parseInt(e.target.value, 10))}
+          itemsCount={totalData}
+          page={page - 1}
+          rowsPerPage={rowsPerPage}
+          onPageChange={(e, newPage) => {
+            setPage(newPage);
+            fetchShared(newPage, rowsPerPage);
+          }}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10));
+            fetchShared(1, parseInt(e.target.value, 10));
+          }}
         />
       </div>
     </div>
