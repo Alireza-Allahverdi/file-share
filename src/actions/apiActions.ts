@@ -1,6 +1,6 @@
 import axios from "axios";
-import { apiRoutes } from "./apiRoutes";
 import { ProfileResponse } from "../pages/opt/account/Account";
+import { apiRoutes } from "./apiRoutes";
 
 export const logInReq = async (data: {
   username: string;
@@ -165,6 +165,13 @@ export const getFavorites = async (data: { page: number; perPage: number }) => {
   return res;
 };
 
+export const getShared = async (data: { page: number; perPage: number }) => {
+  const res = await axios.get(apiRoutes.items.shared, {
+    params: data,
+  });
+  return res;
+};
+
 export const getFileInfo = async (id: string, isFolder: boolean) => {
   const res = await axios.get(apiRoutes.items.itemsInfo(id), {
     params: { isFolder },
@@ -199,11 +206,11 @@ export const uploadFile = async (data: {
   file: any;
 }) => {
   const formData = new FormData();
-formData.append("Name", data.name)
-formData.append("ParentId", data.parentId)
-formData.append("Extension", data.Extension)
-formData.append("IsEncrypted", data.isEncypted)
-formData.append("File", data.file)
+  formData.append("Name", data.name);
+  formData.append("ParentId", data.parentId);
+  formData.append("Extension", data.Extension);
+  formData.append("IsEncrypted", data.isEncypted);
+  formData.append("File", data.file);
   const res = await axios.post(apiRoutes.items.uploadFiles, formData);
   return res;
 };
