@@ -1,6 +1,6 @@
 import axios from "axios";
-import { apiRoutes } from "./apiRoutes";
 import { ProfileResponse } from "../pages/opt/account/Account";
+import { apiRoutes } from "./apiRoutes";
 
 export const logInReq = async (data: {
   username: string;
@@ -160,6 +160,13 @@ export const getFolderContent = async (data: {
 
 export const getFavorites = async (data: { page: number; perPage: number }) => {
   const res = await axios.get(apiRoutes.items.favorites, {
+    params: data,
+  });
+  return res;
+};
+
+export const getShared = async (data: { page: number; perPage: number }) => {
+  const res = await axios.get(apiRoutes.items.shared, {
     params: data,
   });
   return res;
