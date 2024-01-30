@@ -1,27 +1,29 @@
+import axios from "axios";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import Signup from "./pages/auth/signup/Signup.tsx";
-import Signin from "./pages/auth/signin/Signin.tsx";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import AuthLayout from "./components/authLayout/AuthLayout.tsx";
-import Home from "./pages/home/Home.tsx";
+import Layout from "./components/layout/Layout.tsx";
 import OptionLayout from "./components/optionLayout/OptionLayout.tsx";
+import "./index.css";
+import Signin from "./pages/auth/signin/Signin.tsx";
+import Signup from "./pages/auth/signup/Signup.tsx";
+import CustomLink from "./pages/customLink/CustomLink.tsx";
+import Favorite from "./pages/favorite/Favorite.tsx";
+import Folders from "./pages/folders/Folders.tsx";
+import Home from "./pages/home/Home.tsx";
 import Account from "./pages/opt/account/Account.tsx";
 import Personalization from "./pages/opt/personalization/Personalization.tsx";
 import Security from "./pages/opt/security/Security.tsx";
 import ServerSetting from "./pages/opt/serverSetting/ServerSetting.tsx";
 import Users from "./pages/opt/users/Users.tsx";
-import "./index.css";
-import Layout from "./components/layout/Layout.tsx";
-import Favorite from "./pages/favorite/Favorite.tsx";
 import Shared from "./pages/shared/Shared.tsx";
-import axios from "axios";
-import CustomLink from "./pages/customLink/CustomLink.tsx";
-import Folders from "./pages/folders/Folders.tsx";
 
-axios.defaults.baseURL = import.meta.env.VITE_BASE_URL
-axios.defaults.headers.common["Content-Type"] = "application/json"
-axios.defaults.withCredentials = true
+axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
+axios.defaults.headers.common["Content-Type"] = "application/json";
+axios.defaults.withCredentials = true;
 
 if (
   localStorage.theme === "dark" ||
@@ -68,7 +70,7 @@ const router = createBrowserRouter([
       },
       {
         path: "folders/:id",
-        element: <Folders />
+        element: <Folders />,
       },
       {
         path: "favorite",
@@ -122,12 +124,13 @@ const router = createBrowserRouter([
   },
   {
     path: "/customlink/:id",
-    element: <CustomLink />
-  }
+    element: <CustomLink />,
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
+    <ToastContainer position="bottom-right" theme="colored" closeOnClick />
     <RouterProvider router={router} />
   </React.StrictMode>
 );

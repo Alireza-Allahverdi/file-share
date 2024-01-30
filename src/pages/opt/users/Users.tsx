@@ -10,6 +10,7 @@ import { Formik } from "formik";
 import { Fragment, useEffect, useState } from "react";
 import { FaRegUser } from "react-icons/fa6";
 import { PiPlusBold } from "react-icons/pi";
+import { toast } from "react-toastify";
 import {
   addNewUser,
   chnageREstrictaion,
@@ -101,12 +102,12 @@ function Users() {
       username: values.userName,
     })
       .then((res) => {
-        // todo toast
+        toast.success("User added successfully");
         fetchUsers(1, rowsPerPage);
         setNewUserModalState(false);
       })
       .catch((err) => {
-        // todo toast
+        toast.error(err.response.data);
         setNewUserModalState(false);
       });
   };
