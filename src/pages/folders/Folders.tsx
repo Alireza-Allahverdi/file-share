@@ -314,7 +314,7 @@ const Folders = () => {
                         ? `${(item.size / BILION).toFixed(1)} MB`
                         : item.size > THOUSAND
                         ? `${(item.size / BILION).toFixed(1)} KB`
-                        : `${item.size.toFixed(1)} B`}
+                        : `${(item.size).toFixed(1)} B`}
                     </TableCell>
                     <TableCell className="text-on-surface dark:text-on-surface-dark">
                       <IconButton
@@ -531,33 +531,48 @@ const Folders = () => {
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="w-1/3 text-on-surface dark:text-on-surface-dark text-[1em]">
+            <span className="w-2/5 text-on-surface dark:text-on-surface-dark text-[1em]">
                 Description
               </span>
               <span className="w-2/3 text-on-surface dark:text-on-surface-dark text-[1em]">
                 {selectedFileContent?.description}
+                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Modi, eos sapiente exercitationem deserunt, iusto delectus cum unde incidunt earum animi culpa laborum beatae perspiciatis corrupti fuga deleniti tempora sequi quis?
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="w-1/3 text-on-surface dark:text-on-surface-dark text-[1em]">
+            <span className="w-2/5 text-on-surface dark:text-on-surface-dark text-[1em]">
                 Tags
               </span>
-              <div className="flex flex-wrap gap-x-1">
-                {selectedFileContent.tags.map((item) => (
+              <div className="w-2/3 flex flex-wrap gap-x-1">
+                {selectedFileContent?.tags?.map((item) => (
                   <div className="py-1 px-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant-dark border border-outline dark:border-outline-dark">
-                    Shared
+                    {item}
                   </div>
                 ))}
               </div>
             </div>
             <div className="flex justify-between">
-              <span className="w-1/3 text-on-surface dark:text-on-surface-dark text-[1em]">
+            <span className="w-2/5 text-on-surface dark:text-on-surface-dark text-[1em]">
                 File Size
+              </span>
+              <span className="w-2/3 text-on-surface dark:text-on-surface-dark text-[1em]">
+                {selectedFileContent?.itemType === "Folder"
+                  ? null
+                  : selectedFileContent?.size > BILION
+                  ? `${(selectedFileContent?.size / BILION)?.toFixed(1)} GB`
+                  : selectedFileContent?.size > MILION
+                  ? `${(selectedFileContent?.size / BILION)?.toFixed(1)} MB`
+                  : selectedFileContent?.size > THOUSAND
+                  ? `${(selectedFileContent?.size / BILION)?.toFixed(1)} KB`
+                  : `${(selectedFileContent?.size)?.toFixed(1)} B`}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="w-1/3 text-on-surface dark:text-on-surface-dark text-[1em]">
+              <span className="w-2/5 text-on-surface dark:text-on-surface-dark text-[1em]">
                 Sharing Status
+              </span>
+              <span className="w-2/5 text-on-surface dark:text-on-surface-dark text-[1em]">
+                {selectedFileContent?.isShared ? "Public" : "Private"}
               </span>
             </div>
           </div>

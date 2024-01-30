@@ -108,7 +108,7 @@ function Favorite() {
                       ? `${(item.size / BILION).toFixed(1)} MB`
                       : item.size > THOUSAND
                       ? `${(item.size / BILION).toFixed(1)} KB`
-                      : `${item.size.toFixed(1)} B`}
+                      : `${(item.size).toFixed(1)} B`}
                   </TableCell>
                 </TableRow>
               ))}
