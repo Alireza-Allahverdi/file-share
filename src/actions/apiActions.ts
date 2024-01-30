@@ -165,24 +165,45 @@ export const getFavorites = async (data: { page: number; perPage: number }) => {
   return res;
 };
 
-export const getFileInfo = async (id: string,isFolder: boolean) => {
+export const getFileInfo = async (id: string, isFolder: boolean) => {
   const res = await axios.get(apiRoutes.items.itemsInfo(id), {
     params: { isFolder },
   });
   return res;
 };
 
-export const editFileInfo  = async (data: {
-  id: string,
-  name: string,
-  tags: string[],
-  description: string,
-  isFolder: boolean
+export const editFileInfo = async (data: {
+  id: string;
+  name: string;
+  tags: string[];
+  description: string;
+  isFolder: boolean;
 }) => {
-  const res = await axios.put(apiRoutes.items.itemsInfo(data.id), {
-    name: data.name,
-    tags: data.tags,
-    description: data.description
-  }, {params: {isFolder: data.isFolder}});
+  const res = await axios.put(
+    apiRoutes.items.itemsInfo(data.id),
+    {
+      name: data.name,
+      tags: data.tags,
+      description: data.description,
+    },
+    { params: { isFolder: data.isFolder } }
+  );
   return res;
-}
+};
+
+export const uploadFile = async (data: {
+  name: string;
+  parentId: string;
+  Extension: string;
+  isEncypted: boolean;
+  file: any;
+}) => {
+  const formData = new FormData();
+formData.append("Name", data.name)
+formData.append("ParentId", data.parentId)
+formData.append("Extension", data.Extension)
+formData.append("IsEncrypted", data.isEncypted)
+formData.append("File", data.file)
+  const res = await axios.post(apiRoutes.items.uploadFiles, formData);
+  return res;
+};

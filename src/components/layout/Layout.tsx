@@ -65,7 +65,6 @@ const Layout = () => {
     total: 0,
     usage: 0,
   });
-  const [progress, setProgress] = useState<number>(0);
 
   useEffect(() => {
     fetchAccount()
