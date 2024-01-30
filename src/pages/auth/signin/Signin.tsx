@@ -61,7 +61,7 @@ function Signin() {
         localStorage.setItem("shaPass", hash256Pass);
         navigate("/");
       })
-      .catch((err: string) => {
+      .catch((err) => {
         toast.error(err.response.data);
       });
   };
