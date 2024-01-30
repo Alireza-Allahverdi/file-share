@@ -35,7 +35,7 @@ import {
   uploadFile,
 } from "../../actions/apiActions";
 import { WebsiteIcon } from "../../assets";
-import { decrypt } from "../../utils/functions";
+import { decrypt, splitFilename } from "../../utils/functions";
 import ButtonC from "../button/ButtonC";
 import IconButtonC from "../iconButton/IconButtonC";
 import MenuItemC from "../menuItem/MenuItemC";
@@ -79,23 +79,23 @@ const Layout = () => {
   });
 
   const handleUploadFile = (input: React.ChangeEvent<HTMLInputElement>) => {
-    const file = input[0];
-    const reader = new FileReader();
+    let file = input[0];
+    let reader = new FileReader();
     reader.onload = () => {
       getCredentials().then((res) => {
-        const shaPass = localStorage.getItem("shaPass")!;
-        const decryptedKey = decrypt(res.data.key, shaPass, res.data.iv);
-        const wordArray = CryptoJS.lib.WordArray.create(reader.result); // Convert: ArrayBuffer -> WordArray
-        const encrypted = CryptoJS.AES.encrypt(
+        let shaPass = localStorage.getItem("shaPass");
+        let decryptedKey = decrypt(res.data.key, shaPass, res.data.iv);
+        let wordArray = CryptoJS.lib.WordArray.create(reader.result); // Convert: ArrayBuffer -> WordArray
+        let encrypted = CryptoJS.AES.encrypt(
           wordArray,
           decryptedKey
         ).toString(); // Encryption: I: WordArray -> O: -> Base64 encoded string (OpenSSL-format)
 
-        const fileEnc = new Blob([encrypted]); // Create blob from string
+        let fileEnc = new Blob([encrypted]); // Create blob from string
         // let a = document.createElement("a");
         console.log(fileEnc);
 
-        const url = window.URL.createObjectURL(fileEnc);
+        let url = window.URL.createObjectURL(fileEnc);
         // let filename = file.name + ".enc";
         // a.href = url;
         // a.download = filename;
@@ -104,13 +104,15 @@ const Layout = () => {
 
         window.URL.revokeObjectURL(url);
         uploadFile({
-          name: file.name,
+          name: splitFilename(file.name)[0],
           file: fileEnc,
-          Extension: file.type,
+          Extension: splitFilename(file.name)[1],
           isEncypted: true,
-          parentId: id!,
+          parentId: id,
         }).then((uploadRes) => {
           console.log(uploadRes);
+          setUploadModalState(false);
+          window.location.reload();
         });
       });
     };
@@ -127,7 +129,7 @@ const Layout = () => {
           });
         });
       })
-      .catch(() => {
+      .catch((err) => {
         logOut().then(() => {
           navigate("/auth/signin");
         });
@@ -225,7 +227,7 @@ const Layout = () => {
               type="outlined"
               onCLick={() => setUploadModalState(false)}
             />
-            <ButtonC title="Save" type="contained" onCLick={() => {}} />
+            {/* <ButtonC title="Save" type="contained" onCLick={() => {}} /> */}
           </div>
         </div>
       </ModalC>

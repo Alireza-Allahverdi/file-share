@@ -204,21 +204,67 @@ export const uploadFile = async (data: {
   formData.append("Extension", data.Extension);
   formData.append("IsEncrypted", data.isEncypted);
   formData.append("File", data.file);
-  const res = await axios.post(apiRoutes.items.uploadFiles, formData);
+  const res = await axios.post(apiRoutes.items.uploadFiles, formData, {
+    headers: {
+      "Content-Type": "multipart/formdata",
+    },
+  });
   return res;
 };
 
 export const deleteFiles = async (id: string) => {
   const res = await axios.delete(apiRoutes.items.deleteFile(id));
+  return res;
 };
 
-export const deletFolder = async (id: string) => {
+export const deleteFolder = async (id: string) => {
   const res = await axios.delete(apiRoutes.items.deleteFolder(id));
+  return res;
 };
 
 export const getShared = async (data: { page: number; perPage: number }) => {
   const res = await axios.get(apiRoutes.items.shared, {
     params: data,
+  });
+  return res;
+};
+
+export const moveFile = async (currentId: string, newId: string) => {
+  const res = await axios.post(apiRoutes.items.fileMove(currentId), {
+    targetFolderId: newId,
+  });
+  return res;
+};
+
+export const customize = async (
+  currentId: string,
+  isFolder: boolean,
+  color: string
+) => {
+  const res = await axios.post(
+    apiRoutes.items.itemsCustomize(currentId),
+    {
+      color: color,
+    },
+    {
+      params: {
+        isFolder: isFolder,
+      },
+    }
+  );
+  return res;
+};
+
+export const downloadItem = async (id: string) => {
+  const res = await axios.get(apiRoutes.items.fileDownload(id));
+  return res;
+};
+
+export const favorite = async (id: string, isFolder: boolean) => {
+  const res = await axios.post(apiRoutes.items.itemsFavorite(id),{}, {
+    params: {
+      isFolder,
+    },
   });
   return res;
 };
