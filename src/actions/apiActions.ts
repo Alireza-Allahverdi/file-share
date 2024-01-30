@@ -213,6 +213,7 @@ export const deleteFiles = async (id: string) => {
   const res = await axios.delete(apiRoutes.items.deleteFile(id))
 }
 
-export const deletFolder = async () => {
+export const deletFolder = async (id: string) => {
+  const res = await axios.delete(apiRoutes.items.deleteFolder(id))
 
 }
