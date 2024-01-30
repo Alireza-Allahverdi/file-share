@@ -115,7 +115,7 @@ function Shared() {
           itemsCount={totalData}
           page={page - 1}
           rowsPerPage={rowsPerPage}
-          onPageChange={(e, newPage) => {
+          onPageChange={(_, newPage) => {
             setPage(newPage);
             fetchShared(newPage, rowsPerPage);
           }}

@@ -75,7 +75,7 @@ function OptionLayout() {
           setIsAdmin(true);
         }
       })
-      .catch((err) => {
+      .catch(() => {
         navigate("/auth/signin");
       });
   }, []);

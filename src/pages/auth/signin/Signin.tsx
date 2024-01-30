@@ -23,15 +23,15 @@ function Signin() {
   };
 
   const validate = (values: loginValueTypes) => {
-    let errorMsg: {
+    const errorMsg: {
       userName?: string;
       password?: string;
     } = {};
     if (!values.userName) {
-      errorMsg.userName = "add user name";
+      errorMsg.userName = "Username cannot be empty";
     }
     if (!values.password) {
-      errorMsg.password = "add password";
+      errorMsg.password = "Password cannot be empty";
     }
     return errorMsg;
   };
@@ -41,10 +41,10 @@ function Signin() {
     getCredentials()
       .then((res) => {
         if (!res.data.key) {
-          let key = CryptoJS.lib.WordArray.random(64).toString(
+          const key = CryptoJS.lib.WordArray.random(64).toString(
             CryptoJS.enc.Hex
           );
-          let encrypted = encrypt(key, hash256Pass, res.data.iv);
+          const encrypted = encrypt(key, hash256Pass, res.data.iv);
           sendKey(encrypted)
             .then((res) => {
               console.log(res);

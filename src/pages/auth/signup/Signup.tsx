@@ -8,6 +8,7 @@ import { getCredentials, sendKey, signUp } from "../../../actions/apiActions";
 import ButtonC from "../../../components/button/ButtonC";
 import Input from "../../../components/input/Input";
 import { encrypt } from "../../../utils/functions";
+import { validateEmail } from "../../../utils/validations";
 
 type signUpTypes = {
   userName: string;
@@ -31,7 +32,7 @@ function Signup() {
   };
 
   const validate = (values: signUpTypes) => {
-    let errorMsg: {
+    const errorMsg: {
       userName?: string;
       firstName?: string;
       lastName?: string;
@@ -39,32 +40,34 @@ function Signup() {
       password?: string;
       confirmPassword?: string;
     } = {};
-    // if (!Object.keys(values).every((item) => values[item])) {
 
-    // }
     if (!values.firstName) {
-      errorMsg.firstName = "add first name";
+      errorMsg.firstName = "First name cannot be empty";
     }
     if (!values.lastName) {
-      errorMsg.lastName = "add last name";
+      errorMsg.lastName = "Last name cannot be empty";
     }
-    if (!values.userName) {
-      errorMsg.userName = "add user name";
+
+    if (!values.userName || values.userName.length < 6) {
+      errorMsg.userName = "Username must be at least 6 characters long";
     }
-    if (!values.email) {
-      errorMsg.email = "add email address";
+
+    if (!values.password || values.password.length < 8) {
+      errorMsg.password = "Password must be at least 8 characters long";
+    } else if (
+      !/\d/.test(values.password) ||
+      !/[a-zA-Z]/.test(values.password)
+    ) {
+      errorMsg.password =
+        "Password must contain at last one character and digit";
     }
-    if (!values.password) {
-      errorMsg.password = "add password";
+    if (!values.email || !validateEmail(values.email)) {
+      errorMsg.email = "Please enter a valid email address";
     }
-    // todo password check pattern
-    if (!values.confirmPassword) {
-      errorMsg.confirmPassword = "add password confirmation";
+    if (!values.confirmPassword || values.confirmPassword !== values.password) {
+      errorMsg.confirmPassword = "Repeat password does not match";
     }
-    if (values.password !== values.confirmPassword) {
-      errorMsg.confirmPassword =
-        "password and password confirmation are not the same";
-    }
+
     return errorMsg;
   };
 
@@ -73,10 +76,10 @@ function Signup() {
     getCredentials()
       .then((res) => {
         if (!res.data.key) {
-          let key = CryptoJS.lib.WordArray.random(64).toString(
+          const key = CryptoJS.lib.WordArray.random(64).toString(
             CryptoJS.enc.Hex
           );
-          let encrypted = encrypt(key, hash256Pass, res.data.iv);
+          const encrypted = encrypt(key, hash256Pass, res.data.iv);
           sendKey(encrypted)
             .then((res) => {
               console.log(res);

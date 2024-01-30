@@ -21,6 +21,7 @@ import Input from "../../../components/input/Input";
 import ModalC from "../../../components/modal/ModalC";
 import PaginationC from "../../../components/pagination/PaginationC";
 import SwitchC from "../../../components/switch/SwitchC";
+import { validateEmail } from "../../../utils/validations";
 
 type registerTypes = {
   userName: string;
@@ -57,7 +58,7 @@ function Users() {
   };
 
   const validate = (values: registerTypes) => {
-    let errorMsg: {
+    const errorMsg: {
       userName?: string;
       firstName?: string;
       lastName?: string;
@@ -65,28 +66,34 @@ function Users() {
       password?: string;
       confirmPassword?: string;
     } = {};
+
     if (!values.firstName) {
-      errorMsg.firstName = "add first name";
+      errorMsg.firstName = "First name cannot be empty";
     }
     if (!values.lastName) {
-      errorMsg.lastName = "add last name";
+      errorMsg.lastName = "Last name cannot be empty";
     }
-    if (!values.userName) {
-      errorMsg.userName = "add user name";
+
+    if (!values.userName || values.userName.length < 6) {
+      errorMsg.userName = "Username must be at least 6 characters long";
     }
-    if (!values.email) {
-      errorMsg.email = "add email address";
+
+    if (!values.password || values.password.length < 8) {
+      errorMsg.password = "Password must be at least 8 characters long";
+    } else if (
+      !/\d/.test(values.password) ||
+      !/[a-zA-Z]/.test(values.password)
+    ) {
+      errorMsg.password =
+        "Password must contain at last one character and digit";
     }
-    if (!values.password) {
-      errorMsg.password = "add password";
+    if (!values.email || !validateEmail(values.email)) {
+      errorMsg.email = "Please enter a valid email address";
     }
-    if (!values.confirmPassword) {
-      errorMsg.confirmPassword = "add password confirmation";
+    if (!values.confirmPassword || values.confirmPassword !== values.password) {
+      errorMsg.confirmPassword = "Repeat password does not match";
     }
-    if (values.password !== values.confirmPassword) {
-      errorMsg.confirmPassword =
-        "password and password confirmation are not the same";
-    }
+
     return errorMsg;
   };
 
@@ -101,7 +108,7 @@ function Users() {
       password: hashPass,
       username: values.userName,
     })
-      .then((res) => {
+      .then(() => {
         toast.success("User added successfully");
         fetchUsers(1, rowsPerPage);
         setNewUserModalState(false);
@@ -122,14 +129,16 @@ function Users() {
         setTotalData(res.data.itemsCount);
         console.log(res.data);
       })
-      .catch((err) => {});
+      .catch((err) => {
+        toast.error(err.response.data);
+      });
   };
 
   const handleRestrictionChange = (newStatus: boolean, id: string) => {
-    let cloneData = [...userData];
-    let objectIndex = userData.findIndex((item) => item.id === id);
-    let cloneObject = { ...userData[objectIndex] };
-    chnageREstrictaion(id, newStatus).then((res) => {
+    const cloneData = [...userData];
+    const objectIndex = userData.findIndex((item) => item.id === id);
+    const cloneObject = { ...userData[objectIndex] };
+    chnageREstrictaion(id, newStatus).then(() => {
       cloneObject.restricted = newStatus;
       cloneData[objectIndex] = cloneObject;
       setUserData(cloneData);
@@ -332,7 +341,7 @@ function Users() {
           itemsCount={totalData}
           page={page - 1}
           rowsPerPage={rowsPerPage}
-          onPageChange={(e, newPage) => {
+          onPageChange={(_, newPage) => {
             setPage(newPage);
             fetchUsers(newPage, rowsPerPage);
           }}
